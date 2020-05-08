@@ -1,0 +1,261 @@
+{{voir|Coín}}
+== {{langue|fr}} ==
+=== {{S|étymologie}} ===
+: {{siècle|XII}} Du {{étyl|la|fr}} ''[[cuneus]]'' (« coin à [[fendre]] le [[bois]] » ou « tout [[objet]] ayant la forme d’un coin ») qui a également donné en [[français]] le terme ''[[cunéiforme]]'' (« en forme de coin »).
+
+=== {{S|nom|fr}} ===
+{{fr-rég|kwɛ̃}}
+'''coin''' {{pron|kwɛ̃|fr}} {{m}}
+[[File:Wedge-1.jpg|thumb|Exemple de '''coin''' en métal. (1)]]
+# [[pièce|Pièce]] de [[fer]] ou de [[bois]] ou de toute autre matière [[dur]]e, de forme [[prismatique]], dont on se [[servir|sert]] principalement pour [[fendre]] du bois, des [[pierre]]s, en la faisant [[entrer]] [[de force]] avec un [[maillet]] ou un [[marteau]].
+#* ''Au milieu de la nuit, soudain, je m’éveillais, la poitrine ravagée par une toux violente qui déchirait ma gorge et ma trachée, semblant s’enfoncer de plus en plus profondément en moi, comme un '''coin''' ou une cognée.'' {{source|{{w|Michel Leiris}}, ''L’âge d’homme'', 1939, collection Folio, page 64.}}
+#* ''Faire entrer le '''coin''', les '''coins''' dans une pièce de bois pour la fendre.''
+# {{analogie|fr}} Pièce de bois, de [[métal]] ou de [[plastique]] pour [[serrer]] ou pour [[assujettir]] certaines choses.
+#* ''On coinse aussi de la même manière, avec des '''coins''' de proportion, les mâts de hune & de perroquets dans leurs chouquets.'' {{source|''Encyclopédie méthodique : ou par ordre de matières'', V.1, 1783, p. 353}}
+#* ''C'est entre les biseaux et les barres du châssis que se mettent encore d'autres pièces de bois beaucoup plus courtes, taillées aussi en biseau, nommées les '''coins''', qu'il chasse à coups de marteau, à l'aide d'un cognoir ou décognoir , qui est un véritable coin de bois.'' {{source|« ''{{pc|Imprimerie}} (L'art de l’)'' », dans le ''Dictionnaire raisonné universel des arts et métiers'', tome 2, nouvelle édition, Lyon : chez Amable Leroy, 1801, p. 497}}
+# [[poinçon|Poinçon]] qui sert à marquer de la [[vaisselle]], des [[bijou]]x d’or et d’[[argent]].
+#* ''De la vaisselle marquée au '''coin''' de Paris.''
+## {{numismatique|fr}} [[morceau|Morceau]] d’[[acier]] [[graver|gravé]] en [[creux]] dont on se sert pour [[frapper]] de la [[monnaie]], des [[médaille]]s. {{cf|fleur de coin}}.
+##* ''L’homme est un balancier qui frappe une monnaie à son '''coin'''.'' {{source|{{w|Aloysius Bertrand}}, ''{{ws|Gaspard de la nuit}}'', 1842}}
+##* ''Cette médaille est à fleur de '''coin''''' : Elle est parfaitement conservée.
+## {{figuré|fr}} [[marque|Marque]].
+##* ''Cet ouvrage est frappé au '''coin''' du génie.''
+##* ''[...] pas de recette miracle en contrepoint, mais une analyse frappée au '''coin''' du bon sens qui dézingue méthodiquement la plus grande supercherie du siècle'' {{source|Marine {{pc|de Tilly}}, ''Bonheur et boniments'', {{w|Le Point}} n° 2350, 21 septembre 2017}}
+# [[endroit|Endroit]], [[lieu]] où se trouve un [[angle]] [[saillant]] ou [[rentrant]].
+#* ''Sur la gauche est l'auberge du ''Veau qui tette'', renommée pour ses pieds de mouton à la poulette, et que les gastronomes ne confondent point avec celle du '''coin''' de la rue Saint-Denis, à l'enseigne du ''Veau qui mange. {{source|''Place du Grand Châtelet à Paris'', dans ''Nouveau voyage pittoresque de la France'', Paris : Ostervald l'aîné, 1817, vol.1 (note de bas de page , non paginé)}}
+#* ''[…] car il est une règle que les hiverneurs ne doivent point oublier : « faire la guerre aux '''coins''' ! » En effet, les '''coins''', les angles, sont autant de réceptacles à glaces ; les cloisons empêchent la ventilation de s’opérer convenablement, et l’humidité, bientôt transformée en neige, rend les chambres inhabitables, malsaines, […]'' {{source|{{Citation/Jules Verne/Le Pays des fourrures/1873}}}}
+#* ''J’avançai en rampant comme je pouvais vers un '''coin''' pour y appuyer mon dos et soulager mes épaules tordues par des crampes.'' {{source|{{w|Henri Alleg}}, ''La Question'', 1957}}
+# {{par ext|fr}} Endroit qui n’est pas [[exposé]] à la [[vue]].
+#* ''[…] et l’on court se mettre en pantoufles et en robe de chambre pour popoter avec lui au '''coin''' du feu.'' {{source|Octave Uzanne, ''Les Zigzags d’un curieux'', Maison Quantin, 1888, p. 218}}
+#* ''La Moussotte allait de temps à autre jusqu’au seuil de la porte, interrogeant le '''coin''' du bois d’où la route s’échappait de la forêt, la main en abat-jour sur les yeux […]'' {{source|{{w|Louis Pergaud}}, ''Le Retour'', dans ''{{w|Les Rustiques, nouvelles villageoises}}'', 1921}}
+#* ''Longtemps, Bert resta assis, seul dans un '''coin''' de la cabine de Kurt, ne bougeant pas, ne s’aventurant même pas à ouvrir la porte […]'' {{source|{{Citation/H. G. Wells/La Guerre dans les airs/1921|173}}}}
+#* ''Dans un '''coin''', le sosie de Rossi di Palma écoute d’un air pénétré un type tout en lézard.'' {{source|Luc Arbona, ''Escualita : Trans Paris Express'', {{w|Les Inrockuptibles}}, 26 novembre 2014}}
+# {{par ext|fr}} Endroit [[retiré]] et peu [[fréquenter|fréquenté]].
+#* ''Pendant ce temps nous bavardions avec les Norvégiens, et même dans ce '''coin''' perdu du monde, les potins marchaient grand train.'' {{source|{{w|Jean-Baptiste Charcot}}, ''Dans la mer du Groenland'', 1928}}
+#* ''On ne fait plus d’enfants, chez nous, sauf dans les '''coins''' pouilleux, dans les milieux de misère, certains samedi de paye, après stations devant les comptoirs des bistrots.'' {{source|{{Citation/Victor Méric/Les Compagnons de l’Escopette/1930|75}}}}
+#* ''Ce '''coin''' de campagne agricole était tombé au pouvoir d’une bande de malandrins que commandait un certain Bill Gore […]'' {{source|{{Citation/H. G. Wells/La Guerre dans les airs/1921|428}}}}
+#* ''Le capitaine annonça solennellement à Sarah qu'il lui enverrait sous peu le lieutenant Adam Ovambo, l'un de ses meilleurs éléments, un ancien de la criminelle du Cap, chargé depuis peu de ce '''coin''' perdu et brousseux d'Afrique du Sud.'' {{source|Jérôme Pierrat & ‎Emmanuel Pierrat, ''Qui a tué Mathusalem?'', Éditions Denoël, 2012, chap. 2}}
+# {{ellipse|fr}} {{méton|fr}} [[quartier|Quartier]].
+#* ''L’épicier du '''coin'''.''
+# {{ellipse|fr}} {{méton|fr}} [[partie|Partie]].
+#* ''Départ à neuf heures, par un temps toujours indécis. Mais les nuages montent et se déchirent par places, laissant voir quelques '''coins''' de ciel bleu.'' {{source|{{w|Frédéric {{smcp|Weisgerber}}}}, ''Trois mois de campagne au Maroc : étude géographique de la région parcourue'', Paris : Ernest Leroux, 1904, p. 139}}
+# [[extrémité|Extrémité]].
+#* ''Les '''coins''' de la bouche.''
+#* ''Le '''coin''' de l’œil.''
+# [[parement|Parement]] [[décoratif]], souvent [[broder|brodé]], sur les côtés d'un [[bas]], généralement dans la partie [[inférieur]]e.
+#* ''Un instant après, nous déroulions des bas de soie rose tendre à '''coins''' verts...'' {{source|{{w|Gérard de Nerval}}, ''{{w|Les Filles du feu}}'', ''Sylvie'', 1854}}
+# [[morceau|Morceau]], [[portion]] de [[quelque chose]].
+#* ''Un petit '''coin''' de terre.''
+# {{reliure|fr}} Pièces de [[parchemin]], de [[cuir]] ou de [[métal]] dont on [[garnir|garnit]] les [[angle]]s d’un [[livre]], d’un [[registre]].
+# {{militaire|fr}} {{vieilli|fr}} [[troupe|Troupe]] d’[[infanterie]] formant un [[bataillon]] [[triangulaire]] dont une [[pointe]] était tournée vers l’ennemi.
+# {{hippologie|fr}} [[incisive|Incisive]]s qui sont le plus près des [[croc]]s, de chaque [[côté]] de la [[bouche]] du [[cheval]].
+#* ''Il y a lieu de remarquer que la béguité des '''coins''' est très prononcée, et extrêmement commune; le plus souvent ces dents n'ont pas encore rasé à 10, 11 ans et même plus tard.'' {{source|''Journal de médecine vétérinaire et de zootechnie'', vol. 67, A. Rey, 1921, p. 745}}
+# {{échecs|fr}} Une des quatre case du coin de l'échiquier (a8, a1, h1 ou h8).
+
+==== {{S|dérivés}} ====
+{{(}}
+* [[à fleur de coin]]
+* [[Arabe du coin]]
+* [[au coin]]
+* [[au coin de la rue]]
+* [[avoir passé le coin du bois]]
+* [[bourré comme un coin]]
+* [[coin éclateur]]
+* [[coin de frappe]]
+* [[coin monétaire]]
+* [[coup de pied de coin]]
+* [[couper les coins ronds]]
+* [[du coin]]
+* [[en coin]]
+* [[fleur de coin]]
+* [[maison corne en coin]]
+* [[mettre au coin]]
+* [[petit coin]]
+* [[quatre coins]]
+* [[tous les coins et recoins]]
+* [[tout seul dans son coin]]
+{{)}}
+
+==== {{S|apparentés}} ====
+* [[cognée]]
+* [[cogner]]
+* [[coincer]]
+* [[encoignure]]
+* [[recoin]]
+* [[rencogner]]
+
+==== {{S|vocabulaire}} ====
+* {{voir thésaurus|fr|livre}}
+
+==== {{S|traductions}} ====
+{{trad-début|Pièce servant à fendre le bois ou la pierre|1}}
+* {{T|de}} : {{trad+|de|Keil|m}}
+* {{T|en}} : {{trad+|en|wedge}}
+* {{T|ba}} : {{trad--|ba|шына}}
+* {{T|br}} : {{trad+|br|genn}}
+* {{T|ca}} : {{trad+|ca|tascó}}, {{trad-|ca|cuny}}
+* {{T|co}} : {{trad-|co|cozza|f}}, {{trad-|co|cugnolu|m}}
+* {{T|es}} : {{trad+|es|cuña}}
+* {{T|eo}} : {{trad-|eo|kojno}}
+* {{T|gag}} : {{trad--|gag|kama}}
+* {{T|sah}} : {{trad--|sah|ытаһа}}
+* {{T|it}} : {{trad+|it|cuneo|m}}
+* {{T|krc}} : {{trad--|krc|чюй}}
+* {{T|kk}} : {{trad-|kk|сына}}
+* {{T|ky}} : {{trad+|ky|шынаа}}
+* {{T|kum}} : {{trad--|kum|чюй}}
+* {{T|nl}} : {{trad+|nl|spie}}, {{trad+|nl|keg}}, {{trad+|nl|keil}}, {{trad+|nl|wig}}
+* {{T|nog}} : {{trad--|nog|шуьй}}
+* {{T|nb}} : {{trad+|nb|kile|m}}, {{trad+|nb|blei|m}}
+* {{T|oc}} : {{trad-|oc|cunh}}
+* {{T|pt}} : {{trad+|pt|cunha|f}}
+* {{T|ro}} : {{trad+|ro|ic}}
+* {{T|crh}} : {{trad--|crh|şına}}
+* {{T|tt}} : {{trad+|tt|чөй}}
+* {{T|cs}} : {{trad+|cs|klín}}
+* {{T|cv}} : {{trad--|cv|савăл}}
+* {{T|tk}} : {{trad-|tk|pahna}}
+{{trad-fin}}
+{{trad-début|(Numismatique) Morceau d’acier gravé en creux dont on se sert pour frapper de la monnaie, des médailles.|2a}}
+* {{T|es}} : {{trad+|es|cuño}}, {{trad+|es|troquel}}
+* {{T|it}} : {{trad+|it|conio|m}}
+{{trad-fin}}
+{{trad-début|Endroit dans un angle|3}}
+* {{T|af}} : {{trad-|af|hoek}}
+* {{T|sq}} : {{trad+|sq|qoshe}}
+* {{T|de}} : {{trad+|de|Ecke|f}}, {{trad+|de|Eck|n}}, {{trad+|de|Winkel}}
+* {{T|en}} : {{trad+|en|corner}}, {{trad+|en|angle}}, {{trad+|en|chock}}, {{trad+|en|nook}}
+* {{T|ba}} : {{trad--|ba|мөйөш}}
+* {{T|bar}} : {{trad--|bar|Egg|n}}
+* {{T|br}} : {{trad+|br|korn}}
+* {{T|bg}} : {{trad+|bg|ъгъл|tr=ǎgǎl}}
+* {{T|ca}} : {{trad+|ca|angle}}, {{trad+|ca|cantonada}}, {{trad+|ca|racó}}, {{trad+|ca|falca}}, {{trad+|ca|tascó}}
+* {{T|ko}} : {{trad+|ko|구석|tr=guseok}}
+* {{T|co}} : {{trad+|co|cantu}}, {{trad+|co|catagnu}}
+* {{T|da}} : {{trad-|da|hjørne}}
+* {{T|es}} : {{trad+|es|ángulo}}, {{trad+|es|rincón}}
+* {{T|eo}} : {{trad+|eo|angulo}}
+* {{T|et}} : {{trad+|et|nurk}}
+* {{T|fo}} : {{trad-|fo|horn}}, {{trad-|fo|kíli}}, {{trad-|fo|klípi}}
+* {{T|fi}} : {{trad+|fi|nurkka}}
+* {{T|fc}} : {{trad--|fc|câre}}
+* {{T|fy}} : {{trad-|fy|hoeke}}
+* {{T|gd}} : {{trad-|gd|cùil}}
+* {{T|gag}} : {{trad--|gag|köşä}}
+* {{T|el}} : {{trad+|el|γωνία|f|tr=gonía}}
+* {{T|sah}} : {{trad--|sah|муннук}}
+* {{T|io}} : {{trad+|io|angulo}}, {{trad+|io|konio}}
+* {{T|it}} : {{trad+|it|angolo}}
+* {{T|ja}} : {{trad+|ja|隅|tr=sumi}}
+* {{T|krc}} : {{trad--|krc|мюйюш}}
+* {{T|kk}} : {{trad-|kk|бұрыш|tr=burış}}
+* {{T|ky}} : {{trad+|ky|бурч}}
+* {{T|kum}} : {{trad--|kum|мююш}}, {{trad--|kum|буччакъ}}, {{trad--|kum|бурунчакъ}}
+* {{T|la}} : {{trad-|la|angulus}}
+* {{T|lv}} : {{trad+|lv|stūris}}
+* {{T|lt}} : {{trad-|lt|kampas}}
+* {{T|lb}} : {{trad-|lb|Eck|m}}
+* {{T|nl}} : {{trad+|nl|hoek}}
+* {{T|fra-nor}} : {{trad--|fra-nor|carre}}
+* {{T|no}} : {{trad+|no|hjørne}}
+* {{T|oc}} : {{trad+|oc|caire}}, {{trad+|oc|canton}}
+* {{T|pl}} : {{trad+|pl|róg}}, {{trad+|pl|kąt}}
+* {{T|pt}} : {{trad+|pt|ângulo}}, {{trad+|pt|canto}}
+* {{T|ro}} : {{trad+|ro|colț}}
+* {{T|ru}} : {{trad+|ru|угол}}, {{trad+|ru|край}}
+* {{T|se}} : {{trad--|se|čiehka}}
+* {{T|sk}} : {{trad-|sk|roh}}, {{trad-|sk|kut}}
+* {{T|sl}} : {{trad+|sl|vogal}}
+* {{T|ses}} : {{trad--|ses|zol}}, {{trad--|ses|azol}}, {{trad--|ses|zola}}
+* {{T|sv}} : {{trad+|sv|hörn}}, {{trad+|sv|smyg}}, {{trad+|sv|vrå}}
+* {{T|sw}} : {{trad+|sw|kona}}
+* {{T|tl}} : {{trad-|tl|panulukan}}, {{trad-|tl|sulok}}
+* {{T|crh}} : {{trad--|crh|köşe}}
+* {{T|tt}} : {{trad+|tt|почмак}}
+* {{T|cs}} : {{trad+|cs|roh}}, {{trad+|cs|kout}}, {{trad-|cs|koutek}}
+* {{T|cv}} : {{trad--|cv|кĕтес}}
+* {{T|kim}} : {{trad--|kim|булуӈ}}
+* {{T|tsolyáni}} : {{trad--|tsolyáni|ssüngéhlikh}} ({{p}} {{trad--|tsolyáni|ssüngéhlyal}}) (extérieur), {{trad--|tsolyáni|bélukh}} ({{p}} {{trad--|tsolyáni|béluyal}}) (intérieur)
+* {{T|tr}} : {{trad+|tr|açı}}
+* {{T|tk}} : {{trad+|tk|burç}}
+* {{T|uk}} : {{trad-|uk|кут|tr=kut}}
+* {{T|zu}} : {{trad-|zu|ikhona}}, {{trad-|zu|ilikhona}}
+{{trad-fin}}
+
+{{trad-début|Morceau, portion|10}}
+* {{T|de}} : {{trad+|de|Stück}} {{n}} (aussi: ''Stückchen'')
+* {{T|bar}} : {{trad--|bar|Stiggi|n}}, {{trad--|bar|Stiggal|n}}
+* {{T|ca}} : {{trad+|ca|tros}}
+* {{T|co}} : {{trad-|co|pezzu|m}}
+* {{T|es}} : {{trad+|es|esquina|mf}}
+* {{T|pt}} : {{trad+|pt|teco|m}}, {{trad-|pt|pedacinho}}
+{{trad-fin}}
+
+=== {{S|prononciation}} ===
+* {{écouter|lang=fr|France <!-- précisez svp la ville ou la région -->|kwɛ̃|audio=Fr-coin.ogg}}
+* {{écouter|lang=fr|France (Paris)|audio=LL-Q150 (fra)-GrandCelinien-coin.wav}}
+* {{écouter|lang=fr|Suisse (canton du Valais)||audio=LL-Q150 (fra)-DSwissK-coin.wav}}
+* {{écouter|lang=fr|France (Lyon)||audio=LL-Q150 (fra)-WikiLucas00-coin.wav}}
+* {{écouter|lang=fr|France (Vosges)||audio=LL-Q150 (fra)-LoquaxFR-coin.wav}}
+
+
+
+
+
+
+
+==== {{S|homophones|fr}} ====
+* [[coing]]
+
+=== {{S|anagrammes}} ===
+* [[coni]]
+
+=== {{S|voir aussi}} ===
+* {{WP|Coin (machine simple)}}
+
+=== {{S|références}} ===
+* {{R:DAF8}}
+
+== {{langue|fro}} ==
+=== {{S|étymologie}} ===
+: Du {{étyl|la|fro|mot=cuneus}}.
+
+=== {{S|nom|fro}} ===
+'''coin''' {{pron||fro}} {{m}}
+# [[droit|Droit]] de [[frapper]] la [[monnaie]].
+
+=== {{S|références}} ===
+* {{R:Godefroy}}
+
+== {{langue|en}} ==
+=== {{S|étymologie}} ===
+: Du {{étyl|la|en|mot=cuneus}}
+
+=== {{S|nom|en}} ===
+[[Image:ClemensXI.png|thumb|coin]]
+'''coin''' {{pron|kɔɪn|en}}
+{{en-nom-rég|kɔɪn}}
+# [[pièce de monnaie|Pièce de monnaie]].
+#* ''A '''coin''' is a piece of currency, usually metallic and in the shape of a disc, but sometimes polygonal, or with a hole in the middle.''
+# [[jeton|Jeton]] (de casino, de téléphone…).
+
+==== {{S|dérivés}} ====
+* [[coin-holder]] : porte-monnaie.
+
+=== {{S|verbe|en}} ===
+'''coin''' {{pron|kɔɪn|en}}
+{{en-conj-rég|inf.pron=kɔɪn}}
+# [[frapper|Frapper]] (de la monnaie).
+# [[forger|Forger]] (un mot).
+#* ''Margaret Sanger '''coined''' the term "birth control" in 1914 in her monthly newsletter.''
+
+=== {{S|prononciation}} ===
+* {{écouter|lang=en|États-Unis||audio=En-us-coin.ogg}}
+* {{écouter|lang=en|Suisse (Genève)|audio=LL-Q1860 (eng)-Nattes à chat-coin.wav}}
+
+=== {{S|anagrammes}} ===
+* {{lien|icon|en}}
+
+=== {{S|voir aussi}} ===
+* {{WP|coin|coin|en}}
+

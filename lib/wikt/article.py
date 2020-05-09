@@ -14,18 +14,13 @@ class Article:
         # Parse language sections
         lang = ""
         cur_word = None
+        if text == None: return words
         for line in text.split("\n"):
-            if line.startswith("== {{langue|"):
-                if lang_match := re.search("\{\{langue\|(.+)\}\}", line):
-                    lang = lang_match.group(1)
-                    self.log("Langue = " + lang)
-                else:
-                    self.log("Parsing error: template:langue")
-            elif line.startswith("=== {{S|"):
+            if line.startswith("==="):
                 if word_match := re.search("\{\{S\|([^\|\}]+)\|([^\|\}]+)\}\}", line):
                     wtype = word_match.group(1)
                     wlang = word_match.group(2)
-                    self.log("Word = " + wtype)
+                    self.debug("Word = " + wtype)
 
                     if cur_word:
                         words.append(cur_word)
@@ -35,16 +30,29 @@ class Article:
 
                     if wlang != lang:
                         self.log("Langue different in word section: %s vs %s " % (lang, wlang))
-                #else:
-                    #self.log("Skipped section: " + line)
+
+            elif line.startswith("=="):
+                if lang_match := re.search("\{\{langue\|(.+)\}\}", line):
+                    lang = lang_match.group(1)
+                    self.debug("Langue = " + lang)
+                elif lang_match := re.search("\{\{caractère\}\}", line):
+                    pass
+                else:
+                    self.log("Parsing error: template:langue <%s>" % line)
+
             elif line.startswith("'''"):
                 form_line = line
-                self.log("Got form line")
+                self.debug("Got form line")
+
             elif line.startswith("#"):
                 if def_match := re.search("^#+([^#*:] *.+)$", line):
                     def_line = def_match.group(1)
                     def_line = self.clean_def(def_line)
-                    cur_word.add_def(def_line.strip())
+                    if (cur_word):
+                        cur_word.add_def(def_line.strip())
+                    else:
+                        pass
+#                        self.log("Trying to get def outside a word section: " + line)
 
         return words
 
@@ -65,9 +73,12 @@ class Article:
 
 
     def log(self, text):
+        #pass
+        print("LOG [[%s]] : %s" % (self.title, text))
+
+    def debug(self, text):
         pass
         #print("LOG: " + text)
-
 
 class Word:
 

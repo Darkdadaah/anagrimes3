@@ -43,9 +43,18 @@ class Article:
             elif line.startswith("#"):
                 if def_match := re.search("^#+([^#*:] *.+)$", line):
                     def_line = def_match.group(1)
+                    def_line = self.clean_def(def_line)
                     cur_word.add_def(def_line.strip())
 
         return words
+
+    def _template_sub(self, match):
+     return '(' + match.group(1).capitalize() + ')'
+
+    def clean_def(self, line):
+        line = re.sub("\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
+        line = re.sub("\{\{([^\|\}]+?)\|(.+?)\}\}", self._template_sub, line)
+        return line
 
     def __str__(self):
         lines = [

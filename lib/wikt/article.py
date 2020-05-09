@@ -136,7 +136,6 @@ class Article(WikiBase):
                                 # Get word lang
                                 if "2" in section:
                                     wlang = section["2"]
-                                    add_word = True
                                 
                                 # Get controlled type name
                                 if sname in word_types:
@@ -144,9 +143,6 @@ class Article(WikiBase):
                                     add_word = True
 
                                 # Check if this is considered a word section
-                                if add_word and wtype == None:
-                                    wtype = sname
-                                    self.log("Unknown word type", sname)
                                 if add_word and wlang == None:
                                     wlang = lang
                                     self.log("Word has no lang", lang)
@@ -156,6 +152,11 @@ class Article(WikiBase):
                                     if cur_word:
                                         words.append(cur_word)
                                         cur_word = None
+
+                                    # Number
+                                    number = 1
+                                    if "num" in section:
+                                        number = section["num"]
 
                                     # Check if flexion
                                     is_flexion = False
@@ -170,7 +171,7 @@ class Article(WikiBase):
                                     if " " in self.title:
                                             is_locution = True
 
-                                    cur_word = Word(title, lang, wtype, is_flexion=is_flexion, is_locution=is_locution)
+                                    cur_word = Word(title, lang, wtype, is_flexion=is_flexion, is_locution=is_locution, number=number)
 
                                     # TODO: check that is a word type
                                     if wlang != lang:
@@ -246,7 +247,7 @@ class Article(WikiBase):
 
 class Word(WikiBase):
 
-    def __init__(self, title, lang, wtype, is_flexion=False, is_locution=False):
+    def __init__(self, title, lang, wtype, is_flexion=False, is_locution=False, number=None):
         self.title = title
         self.lang = lang
         self.type = wtype
@@ -254,6 +255,7 @@ class Word(WikiBase):
         self.defs = []
         self.is_flexion = is_flexion
         self.is_locution = is_locution
+        self.number = number
 
     def add_def(self, def_line):
         self.defs.append(def_line)
@@ -284,6 +286,8 @@ class Word(WikiBase):
             struct["is_flexion"] = True
         if self.is_locution:
             struct["is_locution"] = True
+        if self.number:
+            struct["number"] = self.number
 
         # Add form properties
         if self.form:

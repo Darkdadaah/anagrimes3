@@ -1,8 +1,15 @@
 #!/usr/bin/python
 
-import re
+import re, sys
 
 class WikiBase(object):
+
+    def log(self, name, detail=""):
+        print("LOG\t[[%s]]\t%s\t%s" % (self.title, name, detail), file=sys.stderr)
+
+    def debug(self, text):
+        pass
+        #print("LOG: " + text)
 
     def parse_section(self, section_str):
         # Extract the level and content of the section title
@@ -18,11 +25,11 @@ class WikiBase(object):
                 if sec_start == sec_signs:
                     sec_level = nlevel
                     if sec_end != sec_signs:
-                        self.log("Section level start and end differ: %s ... %s" % (sec_start, sec_end))
+                        self.log("Section level start and end differ", section_str)
 
             return (sec_level, sec_title)
         else:
-            self.log("Can't parse section: <%s>" % section_str)
+            self.log("Can't parse section", section_str)
             return(0, "")
 
     def parse_template(self, template_str):
@@ -45,6 +52,11 @@ class WikiBase(object):
         return template
 
 class Article(WikiBase):
+
+    temp_def_keep_only_par = ["term"]
+    temp_def_keep_with_par = ["cf", "variante", "variante ortho de", "variante orthographique de"]
+    temp_def_no_parentheses = temp_def_keep_with_par
+    temp_def_no_capitalize = ["cf"]
     
     def __init__(self, title, text):
         self.title = title
@@ -63,7 +75,7 @@ class Article(WikiBase):
                 (level, sec_title) = self.parse_section(line)
                 
                 if level == None or re.search("^ *$", sec_title):
-                    self.log("Skip section: %s" % line)
+                    self.log("Skip section", line)
                     continue
 
                 # Language section
@@ -71,7 +83,7 @@ class Article(WikiBase):
                     section = self.parse_template(sec_title)
 
                     if section == {}:
-                        self.log("Section 3 is not a template: %s" % line)
+                        self.log("Section 3 is not a template", line)
                         continue
 
                     if section and "0" in section:
@@ -82,21 +94,21 @@ class Article(WikiBase):
                                 lang = section["1"]
                             else:
                                 lang = None
-                                self.log("Langue section has no lang parameter:" % line)
+                                self.log("Langue section has no lang parameter", line)
                         elif templ_name == "caractère":
                             lang = None
                             self.debug("Skip Caractere section: %s" % line)
                         else:
                             lang = None
-                            self.log("Unrecognized level 2 section template: %s" % line)
+                            self.log("Unrecognized level 2 section template", line)
                     else:
                         lang = None
-                        self.log("Unrecognized level 2 section: %s" % line)
+                        self.log("Unrecognized level 2 section: %s", line)
                 elif level == 3:
                     section = self.parse_template(sec_title)
                     
                     if section == {}:
-                        self.log("Section 3 is not a template: %s" % line)
+                        self.log("Section 3 is not a template: %s", line)
                         continue
 
                     if section and "0" in section:
@@ -119,15 +131,15 @@ class Article(WikiBase):
                                     
                                     # TODO: check that is a word type
                                     if wlang != lang:
-                                        self.log("Langue section parameter is different from word section section: %s vs %s" % (lang, wlang))
+                                        self.log("Langue section parameter is different from word section section", "%s vs %s" % (lang, wlang))
                                 #else:
-                                #    self.log("Missing lang parameter in word section title: %s" % line)
+                                #    self.log("Missing lang parameter in word section title", line)
                             else:
-                                self.log("Level 3 section has no type parameter:" % line)
+                                self.log("Level 3 section has no type parameter", line)
                         else:
-                            self.log("Unrecognized level 3 template: %s" % line)
+                            self.log("Unrecognized level 3 template", line)
                     else:
-                        self.log("Unrecognized level 3 section: %s" % line)
+                        self.log("Unrecognized level 3 section: %s", line)
 
             elif line.startswith("'''"):
                 form_line = line
@@ -141,24 +153,43 @@ class Article(WikiBase):
                         cur_word.add_def(def_line.strip())
                     else:
                         pass
-#                        self.log("Trying to get def outside a word section: " + line)
+#                        self.log("Trying to get def outside a word section", line)
 
         return words
 
-    def _template_sub_1pars(self, match):
-     return '(' + match.group(1).capitalize() + ' ' + match.group(2) + ')'
 
-    def _template_sub_0pars(self, match):
-     return '(' + match.group(1).capitalize() + ')'
+    def _template_def(self, match):
+        template_str = match.group(1)
+        parts = self.parse_template(template_str)
+        
+        title = None
+        par = None
+        if "0" in parts: title = parts["0"]
+        if "1" in parts: par = parts["1"]
+
+        temp_str = ""
+        if title in self.temp_def_keep_with_par and par != None:
+            temp_str = title + " " + par
+
+        elif title in self.temp_def_keep_only_par and par != None:
+            temp_str = par
+        else:
+            temp_str = title
+
+        if title not in self.temp_def_no_capitalize:
+            temp_str = temp_str.capitalize()
+
+        if title not in self.temp_def_no_parentheses:
+            temp_str = "(" + temp_str + ")"
+
+        return temp_str
 
     def clean_def(self, line):
         # Remove wiki links
         line = re.sub("\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
 
         # Remove templates links with 1 parameter
-        line = re.sub("\{\{([^\|\}]+?)\|(.+?)\}\}", self._template_sub_1pars, line)
-        # Remove templates links with no parameters
-        line = re.sub("\{\{([^\|\}]+?)\}\}", self._template_sub_0pars, line)
+        line = re.sub("(\{\{.+?\}\})", self._template_def, line)
         
         # Remove italic and bold
         line = re.sub("'''(.+)'''", r"\1", line)
@@ -173,14 +204,6 @@ class Article(WikiBase):
                 ]
         return "\n".join(lines)
 
-
-    def log(self, text):
-        #pass
-        print("LOG [[%s]] : %s" % (self.title, text))
-
-    def debug(self, text):
-        pass
-        #print("LOG: " + text)
 
 class Word(WikiBase):
 

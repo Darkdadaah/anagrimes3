@@ -7,9 +7,9 @@ class WikiBase(object):
     def log(self, name, detail=""):
         print("LOG\t[[%s]]\t%s\t%s" % (self.title, name, detail), file=sys.stderr)
 
-    def debug(self, text):
+    def debug(self, name, details=""):
         pass
-        #print("LOG: " + text)
+        #self.log(name, details)
 
     def parse_section(self, section_str):
         # Extract the level and content of the section title
@@ -75,7 +75,7 @@ class Article(WikiBase):
                 (level, sec_title) = self.parse_section(line)
                 
                 if level == None or re.search("^ *$", sec_title):
-                    self.log("Skip section", line)
+                    self.debug("Skip section", line)
                     continue
 
                 # Language section
@@ -83,7 +83,7 @@ class Article(WikiBase):
                     section = self.parse_template(sec_title)
 
                     if section == {}:
-                        self.log("Section 3 is not a template", line)
+                        self.log("Section 2 is not a template", line)
                         continue
 
                     if section and "0" in section:
@@ -97,18 +97,18 @@ class Article(WikiBase):
                                 self.log("Langue section has no lang parameter", line)
                         elif templ_name == "caractère":
                             lang = None
-                            self.debug("Skip Caractere section: %s" % line)
+                            self.debug("Skip Caractere section", line)
                         else:
                             lang = None
                             self.log("Unrecognized level 2 section template", line)
                     else:
                         lang = None
-                        self.log("Unrecognized level 2 section: %s", line)
+                        self.log("Unrecognized level 2 section", line)
                 elif level == 3:
                     section = self.parse_template(sec_title)
                     
                     if section == {}:
-                        self.log("Section 3 is not a template: %s", line)
+                        self.log("Section 3 is not a template", line)
                         continue
 
                     if section and "0" in section:
@@ -139,7 +139,7 @@ class Article(WikiBase):
                         else:
                             self.log("Unrecognized level 3 template", line)
                     else:
-                        self.log("Unrecognized level 3 section: %s", line)
+                        self.log("Unrecognized level 3 section", line)
 
             elif line.startswith("'''"):
                 form_line = line

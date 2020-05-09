@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import re, sys
+from wikt.data import word_types, word_attributes
 
 class WikiBase(object):
 
@@ -127,13 +128,31 @@ class Article(WikiBase):
                         # Section template
                         if templ_name == "S":
                             if "1" in section:
-                                wtype = section["1"]
+                                sname = section["1"]
+                                wlang = None
+                                wtype = None
+                                add_word = False
 
-                                # Check lang
+                                # Get word lang
                                 if "2" in section:
                                     wlang = section["2"]
+                                    add_word = True
+                                
+                                # Get controlled type name
+                                if sname in word_types:
+                                    wtype = word_types[sname]
+                                    add_word = True
 
-                                    # Create a word
+                                # Check if this is considered a word section
+                                if add_word and wtype == None:
+                                    wtype = sname
+                                    self.log("Unknown word type", sname)
+                                if add_word and wlang == None:
+                                    wlang = lang
+                                    self.log("Word has no lang", lang)
+
+                                # Create a word
+                                if add_word:
                                     if cur_word:
                                         words.append(cur_word)
                                         cur_word = None
@@ -142,8 +161,6 @@ class Article(WikiBase):
                                     # TODO: check that is a word type
                                     if wlang != lang:
                                         self.log("Langue section parameter is different from word section section", "%s vs %s" % (lang, wlang))
-                                #else:
-                                #    self.log("Missing lang parameter in word section title", line)
                             else:
                                 self.log("Level 3 section has no type parameter", line)
                         else:
@@ -245,8 +262,11 @@ class Word(WikiBase):
             "type" : self.type,
             "defs" : self.defs,
         }
-        if self.form and self.form.prons:
-            struct["prons"] = self.form.prons
+        if self.form:
+            if self.form.prons:
+                struct["prons"] = self.form.prons
+            if self.form.attributes:
+                struct["attributes"] = self.form.attributes
         return struct
 
 class Form(WikiBase):
@@ -258,7 +278,8 @@ class Form(WikiBase):
         self.title = title
         self.form = None
         self.prons = []
-        self.properties = []
+        self.attributes = []
+
         self.parse_form_line(form_line)
     
     def parse_form_line(self, line):
@@ -274,8 +295,19 @@ class Form(WikiBase):
                     pron_str = pron["1"]
                     self.add_pron(pron_str)
 
+        # Get other attributes
+        for attr in word_attributes:
+            if attr in templates:
+                self.add_attribute(word_attributes[attr])
+
     def add_pron(self, pron_str):
         self.prons.append(pron_str)
+
+    def add_attribute(self, attr):
+        if attr not in self.attributes:
+            self.attributes.append(attr)
+        else:
+            self.log("Attribute written twice", attr)
 
     def get_templates(self, string):
         templates = {}

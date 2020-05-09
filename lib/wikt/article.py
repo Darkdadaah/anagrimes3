@@ -279,15 +279,10 @@ class Word(WikiBase):
             "lang" : self.lang,
             "type" : self.type,
             "defs" : self.defs,
+            "is_flexion" : self.is_flexion,
+            "is_locution" : self.is_locution,
+            "number" : self.number,
         }
-
-        # Additional optional properties
-        if self.is_flexion:
-            struct["is_flexion"] = True
-        if self.is_locution:
-            struct["is_locution"] = True
-        if self.number:
-            struct["number"] = self.number
 
         # Add form properties
         if self.form:

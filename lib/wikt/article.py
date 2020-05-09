@@ -53,7 +53,7 @@ class WikiBase(object):
 
 class Article(WikiBase):
 
-    temp_def_keep_only_par = ["term"]
+    temp_def_keep_only_par = ["term", "lien"]
     temp_def_keep_with_par = ["cf", "variante", "variante ortho de", "variante orthographique de"]
     temp_def_no_parentheses = temp_def_keep_with_par
     temp_def_no_capitalize = ["cf"]

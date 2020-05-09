@@ -156,8 +156,22 @@ class Article(WikiBase):
                                     if cur_word:
                                         words.append(cur_word)
                                         cur_word = None
-                                    cur_word = Word(title, lang, wtype)
+
+                                    # Check if flexion
+                                    is_flexion = False
+                                    if "3" in section:
+                                        if section["3"] == "flexion":
+                                            is_flexion = True
+                                        else:
+                                            self.log("Parameter 3 should be flexion", line)
                                     
+                                    # Check if locution
+                                    is_locution = False
+                                    if " " in self.title:
+                                            is_locution = True
+
+                                    cur_word = Word(title, lang, wtype, is_flexion=is_flexion, is_locution=is_locution)
+
                                     # TODO: check that is a word type
                                     if wlang != lang:
                                         self.log("Langue section parameter is different from word section section", "%s vs %s" % (lang, wlang))
@@ -232,12 +246,14 @@ class Article(WikiBase):
 
 class Word(WikiBase):
 
-    def __init__(self, title, lang, wtype):
+    def __init__(self, title, lang, wtype, is_flexion=False, is_locution=False):
         self.title = title
         self.lang = lang
         self.type = wtype
         self.form = None
         self.defs = []
+        self.is_flexion = is_flexion
+        self.is_locution = is_locution
 
     def add_def(self, def_line):
         self.defs.append(def_line)
@@ -262,6 +278,14 @@ class Word(WikiBase):
             "type" : self.type,
             "defs" : self.defs,
         }
+
+        # Additional optional properties
+        if self.is_flexion:
+            struct["is_flexion"] = True
+        if self.is_locution:
+            struct["is_locution"] = True
+
+        # Add form properties
         if self.form:
             if self.form.prons:
                 struct["prons"] = self.form.prons

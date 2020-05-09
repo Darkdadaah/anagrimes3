@@ -11,7 +11,7 @@ import re
 xml_file = os.path.join(os.path.dirname(__file__), "../data/frwikt.xml")
 
 # Print to json file
-out_file = os.path.join(os.path.dirname(__file__), "../data/frwikt_2.json")
+out_file = os.path.join(os.path.dirname(__file__), "../data/frwikt.json")
 
 with open(out_file, "w") as outf:
     title = None

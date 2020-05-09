@@ -145,12 +145,25 @@ class Article(WikiBase):
 
         return words
 
-    def _template_sub(self, match):
+    def _template_sub_1pars(self, match):
+     return '(' + match.group(1).capitalize() + ' ' + match.group(2) + ')'
+
+    def _template_sub_0pars(self, match):
      return '(' + match.group(1).capitalize() + ')'
 
     def clean_def(self, line):
+        # Remove wiki links
         line = re.sub("\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
-        line = re.sub("\{\{([^\|\}]+?)\|(.+?)\}\}", self._template_sub, line)
+
+        # Remove templates links with 1 parameter
+        line = re.sub("\{\{([^\|\}]+?)\|(.+?)\}\}", self._template_sub_1pars, line)
+        # Remove templates links with no parameters
+        line = re.sub("\{\{([^\|\}]+?)\}\}", self._template_sub_0pars, line)
+        
+        # Remove italic and bold
+        line = re.sub("'''(.+)'''", r"\1", line)
+        line = re.sub("''(.+)''", r"\1", line)
+
         return line
 
     def __str__(self):

@@ -11,14 +11,10 @@ with open(test_file, "r") as f:
     text = f.read()
 
 a = Article(title, text)
-print(a.title)
-
-print(a)
-for word in a.words:
-    print(word)
 
 # Print to json file
 out_file = os.path.join(os.path.dirname(__file__), "../data/coin.jsonl")
+print(out_file)
 
 with open(out_file, "w") as outf:
     for word in a.words:

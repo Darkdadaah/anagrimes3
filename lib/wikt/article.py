@@ -44,9 +44,12 @@ class WikiBase(object):
                 if part_match := re.search("^ *(.+?) *= *(.+?) *$", part):
                     pkey = part_match.group(1)
                     pval = part_match.group(2)
-                    template[pkey] = pval
+                    if pval != "":
+                        template[pkey] = pval
                 else:
-                    template[str(part_i)] = part.strip()
+                    pval = part.strip()
+                    if pval != "":
+                        template[str(part_i)] = pval
                     part_i += 1
 
         return template
@@ -141,22 +144,17 @@ class Article(WikiBase):
                     else:
                         self.log("Unrecognized level 3 section", line)
 
-            elif line.startswith("'''"):
-                form_line = line
-                self.debug("Got form line")
+            elif line.startswith("'''") and lang and cur_word:
+                form = Form(title, line)
+                cur_word.add_form(form)
 
-            elif line.startswith("#"):
+            elif line.startswith("#") and lang and cur_word:
                 if def_match := re.search("^#+([^#*:] *.+)$", line):
                     def_line = def_match.group(1)
                     def_line = self.clean_def(def_line)
-                    if (cur_word):
-                        cur_word.add_def(def_line.strip())
-                    else:
-                        pass
-#                        self.log("Trying to get def outside a word section", line)
+                    cur_word.add_def(def_line.strip())
 
         return words
-
 
     def _template_def(self, match):
         template_str = match.group(1)
@@ -217,11 +215,15 @@ class Word(WikiBase):
     def add_def(self, def_line):
         self.defs.append(def_line)
 
+    def add_form(self, form):
+        self.form = form
+
     def __str__(self):
         lines = [
                 "TITLE = %s" % self.title,
                 "LANG  = %s" % self.lang,
                 "TYPE  = %s" % self.type,
+                "PRONS = %s" % self.form.prons,
                 "DEFS  = %d" % len(self.defs)
                 ]
         return "\n\t".join(lines)
@@ -233,5 +235,55 @@ class Word(WikiBase):
             "type" : self.type,
             "defs" : self.defs,
         }
+        if self.form and self.form.prons:
+            struct["prons"] = self.form.prons
         return struct
+
+class Form(WikiBase):
+
+    def __init__(self, title, form_line):
+        self.title = title
+        self.form = None
+        self.prons = []
+        self.properties = []
+        self.parse_form_line(form_line)
+    
+    def parse_form_line(self, line):
+        # Form line is like this: '''(WORD)''' (PROPERTIES in templates)
+
+        if form_match := re.search("^'''(.+?)''' ?(.+)? *$", line):
+            form = form_match.group(1)
+            templates = self.get_templates(form_match.group(2))
+            
+            # Get pronunciations
+            if "pron" in templates:
+                prons = templates["pron"]
+                
+                for pron in prons:
+                    if "1" in pron:
+                        pron_str = pron["1"]
+                        self.add_pron(pron_str)
+        else:
+            self.log("Can't parse form line", line)
+
+    def add_pron(self, pron_str):
+        self.prons.append(pron_str)
+
+    def get_templates(self, string):
+        templates = {}
+        
+        if string == None:
+            return templates
+
+        temps = re.findall("(\{\{[^\}]+?\}\})", string)
+        
+        for temp_str in temps:
+            parts = self.parse_template(temp_str)
+            title = parts["0"]
+            if title in templates:
+                templates[title].append(parts)
+            else :
+                templates[title] = [parts]
+        
+        return templates
 

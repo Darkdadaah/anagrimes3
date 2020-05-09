@@ -17,6 +17,7 @@ with open(out_file, "w") as outf:
     title = None
     num = 0
     namespaced = re.compile(".+:.+")
+    outf.write("[\n")
     context = ET.iterparse(xml_file, events=("start","end"))
     for event, elem in context:
         _, _, tag = elem.tag.rpartition('}')
@@ -31,6 +32,8 @@ with open(out_file, "w") as outf:
                 print("%d articles" % num)
             article = Article(title, elem.text)
             for word in article.words:
+                if num > 1:
+                    outf.write(",\n")
                 outf.write(json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n")
             title = None
             
@@ -44,4 +47,5 @@ with open(out_file, "w") as outf:
                 while ancestor.getprevious() is not None:
                     del ancestor.getparent()[0]
     del context
+    outf.write("]\n")
 

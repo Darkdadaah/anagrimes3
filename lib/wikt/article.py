@@ -150,7 +150,7 @@ class Article(WikiBase):
                             self.log("Unrecognized level 3 template", line)
                     else:
                         self.log("Unrecognized level 3 section", line)
-                else:
+                elif cur_word:
                     words.append(cur_word)
                     cur_word = None
 
@@ -263,21 +263,16 @@ class Form(WikiBase):
     
     def parse_form_line(self, line):
         # Form line is like this: '''(WORD)''' (PROPERTIES in templates)
+        templates = self.get_templates(line)
 
-        if form_match := self.form_regex.search(line):
-            form = form_match.group(1)
-            templates = self.get_templates(form_match.group(2))
-            
-            # Get pronunciations
-            if "pron" in templates:
-                prons = templates["pron"]
-                
-                for pron in prons:
-                    if "1" in pron:
-                        pron_str = pron["1"]
-                        self.add_pron(pron_str)
-        else:
-            self.log("Can't parse form line", line)
+        # Get pronunciations
+        if "pron" in templates:
+            prons = templates["pron"]
+
+            for pron in prons:
+                if "1" in pron:
+                    pron_str = pron["1"]
+                    self.add_pron(pron_str)
 
     def add_pron(self, pron_str):
         self.prons.append(pron_str)

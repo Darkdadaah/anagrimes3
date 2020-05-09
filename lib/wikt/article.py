@@ -4,6 +4,11 @@ import re, sys
 
 class WikiBase(object):
 
+    section_regex = re.compile("^(=+) *(.+?) *(=+)$")
+    template_inside_regex = re.compile("^ *\{\{ *(.+) *\}\} *$")
+    template_parts_regex = re.compile("^ *(.+?) *= *(.+?) *$")
+    empty_regex = re.compile("^ *$")
+
     def log(self, name, detail=""):
         print("LOG\t[[%s]]\t%s\t%s" % (self.title, name, detail), file=sys.stderr)
 
@@ -13,7 +18,7 @@ class WikiBase(object):
 
     def parse_section(self, section_str):
         # Extract the level and content of the section title
-        if sec_match := re.search("^(=+) *(.+?) *(=+)$", section_str.strip()):
+        if sec_match := self.section_regex.search(section_str.strip()):
             sec_start = sec_match.group(1)
             sec_title = sec_match.group(2)
             sec_end = sec_match.group(3)
@@ -35,13 +40,13 @@ class WikiBase(object):
     def parse_template(self, template_str):
         template = {}
         
-        if templ_match := re.search("^ *\{\{ *(.+) *\}\} *$", template_str):
+        if templ_match := self.template_inside_regex.search(template_str):
             templ_content = templ_match.group(1)
             templ_parts = templ_content.split("|")
 
             part_i = 0
             for part in templ_parts:
-                if part_match := re.search("^ *(.+?) *= *(.+?) *$", part):
+                if part_match := self.template_parts_regex.search(part):
                     pkey = part_match.group(1)
                     pval = part_match.group(2)
                     if pval != "":
@@ -55,6 +60,8 @@ class WikiBase(object):
         return template
 
 class Article(WikiBase):
+
+    def_regex = re.compile("^#+([^#*:] *.+)$")
 
     temp_def_keep_only_par = ["term", "lien"]
     temp_def_keep_with_par = ["cf", "variante", "variante ortho de", "variante orthographique de"]
@@ -77,7 +84,7 @@ class Article(WikiBase):
             if line.startswith("=="):
                 (level, sec_title) = self.parse_section(line)
                 
-                if level == None or re.search("^ *$", sec_title):
+                if level == None or self.empty_regex.search(sec_title):
                     self.debug("Skip section", line)
                     continue
 
@@ -107,7 +114,7 @@ class Article(WikiBase):
                     else:
                         lang = None
                         self.log("Unrecognized level 2 section", line)
-                elif level == 3:
+                elif lang and level == 3:
                     section = self.parse_template(sec_title)
                     
                     if section == {}:
@@ -143,13 +150,16 @@ class Article(WikiBase):
                             self.log("Unrecognized level 3 template", line)
                     else:
                         self.log("Unrecognized level 3 section", line)
+                else:
+                    words.append(cur_word)
+                    cur_word = None
 
             elif line.startswith("'''") and lang and cur_word:
                 form = Form(title, line)
                 cur_word.add_form(form)
 
             elif line.startswith("#") and lang and cur_word:
-                if def_match := re.search("^#+([^#*:] *.+)$", line):
+                if def_match := self.def_regex.search(line):
                     def_line = def_match.group(1)
                     def_line = self.clean_def(def_line)
                     cur_word.add_def(def_line.strip())
@@ -241,6 +251,9 @@ class Word(WikiBase):
 
 class Form(WikiBase):
 
+    form_regex = re.compile("^'''(.+?)''' ?(.+)? *$")
+    template_regex = re.compile("(\{\{[^\}]+?\}\})")
+
     def __init__(self, title, form_line):
         self.title = title
         self.form = None
@@ -251,7 +264,7 @@ class Form(WikiBase):
     def parse_form_line(self, line):
         # Form line is like this: '''(WORD)''' (PROPERTIES in templates)
 
-        if form_match := re.search("^'''(.+?)''' ?(.+)? *$", line):
+        if form_match := self.form_regex.search(line):
             form = form_match.group(1)
             templates = self.get_templates(form_match.group(2))
             
@@ -275,7 +288,7 @@ class Form(WikiBase):
         if string == None:
             return templates
 
-        temps = re.findall("(\{\{[^\}]+?\}\})", string)
+        temps = self.template_regex.findall(string)
         
         for temp_str in temps:
             parts = self.parse_template(temp_str)

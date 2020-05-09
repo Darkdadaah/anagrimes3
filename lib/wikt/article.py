@@ -2,7 +2,49 @@
 
 import re
 
-class Article:
+class WikiBase(object):
+
+    def parse_section(self, section_str):
+        # Extract the level and content of the section title
+        if sec_match := re.search("^(=+) *(.+?) *(=+)$", section_str.strip()):
+            sec_start = sec_match.group(1)
+            sec_title = sec_match.group(2)
+            sec_end = sec_match.group(3)
+            
+            # Get level
+            sec_level = 0
+            for nlevel in range(2,6):
+                sec_signs = '=' * nlevel
+                if sec_start == sec_signs:
+                    sec_level = nlevel
+                    if sec_end != sec_signs:
+                        self.log("Section level start and end differ: %s ... %s" % (sec_start, sec_end))
+
+            return (sec_level, sec_title)
+        else:
+            self.log("Can't parse section: <%s>" % section_str)
+            return(0, "")
+
+    def parse_template(self, template_str):
+        template = {}
+        
+        if templ_match := re.search("^ *\{\{ *(.+) *\}\} *$", template_str):
+            templ_content = templ_match.group(1)
+            templ_parts = templ_content.split("|")
+
+            part_i = 0
+            for part in templ_parts:
+                if part_match := re.search("^ *(.+?) *= *(.+?) *$", part):
+                    pkey = part_match.group(1)
+                    pval = part_match.group(2)
+                    template[pkey] = pval
+                else:
+                    template[str(part_i)] = part.strip()
+                    part_i += 1
+
+        return template
+
+class Article(WikiBase):
     
     def __init__(self, title, text):
         self.title = title
@@ -16,29 +58,76 @@ class Article:
         cur_word = None
         if text == None: return words
         for line in text.split("\n"):
-            if line.startswith("==="):
-                if word_match := re.search("\{\{S\|([^\|\}]+)\|([^\|\}]+)\}\}", line):
-                    wtype = word_match.group(1)
-                    wlang = word_match.group(2)
-                    self.debug("Word = " + wtype)
+            # Get title elements
+            if line.startswith("=="):
+                (level, sec_title) = self.parse_section(line)
+                
+                if level == None or re.search("^ *$", sec_title):
+                    self.log("Skip section: %s" % line)
+                    continue
 
-                    if cur_word:
-                        words.append(cur_word)
-                        cur_word = None
+                # Language section
+                if level == 2:
+                    section = self.parse_template(sec_title)
 
-                    cur_word = Word(title, lang, wtype)
+                    if section == {}:
+                        self.log("Section 3 is not a template: %s" % line)
+                        continue
 
-                    if wlang != lang:
-                        self.log("Langue different in word section: %s vs %s " % (lang, wlang))
+                    if section and "0" in section:
+                        templ_name = section["0"]
 
-            elif line.startswith("=="):
-                if lang_match := re.search("\{\{langue\|(.+)\}\}", line):
-                    lang = lang_match.group(1)
-                    self.debug("Langue = " + lang)
-                elif lang_match := re.search("\{\{caractère\}\}", line):
-                    pass
-                else:
-                    self.log("Parsing error: template:langue <%s>" % line)
+                        if templ_name == "langue":
+                            if "1" in section:
+                                lang = section["1"]
+                            else:
+                                lang = None
+                                self.log("Langue section has no lang parameter:" % line)
+                        elif templ_name == "caractère":
+                            lang = None
+                            self.debug("Skip Caractere section: %s" % line)
+                        else:
+                            lang = None
+                            self.log("Unrecognized level 2 section template: %s" % line)
+                    else:
+                        lang = None
+                        self.log("Unrecognized level 2 section: %s" % line)
+                elif level == 3:
+                    section = self.parse_template(sec_title)
+                    
+                    if section == {}:
+                        self.log("Section 3 is not a template: %s" % line)
+                        continue
+
+                    if section and "0" in section:
+                        templ_name = section["0"]
+
+                        # Section template
+                        if templ_name == "S":
+                            if "1" in section:
+                                wtype = section["1"]
+
+                                # Check lang
+                                if "2" in section:
+                                    wlang = section["2"]
+
+                                    # Create a word
+                                    if cur_word:
+                                        words.append(cur_word)
+                                        cur_word = None
+                                    cur_word = Word(title, lang, wtype)
+                                    
+                                    # TODO: check that is a word type
+                                    if wlang != lang:
+                                        self.log("Langue section parameter is different from word section section: %s vs %s" % (lang, wlang))
+                                #else:
+                                #    self.log("Missing lang parameter in word section title: %s" % line)
+                            else:
+                                self.log("Level 3 section has no type parameter:" % line)
+                        else:
+                            self.log("Unrecognized level 3 template: %s" % line)
+                    else:
+                        self.log("Unrecognized level 3 section: %s" % line)
 
             elif line.startswith("'''"):
                 form_line = line
@@ -80,7 +169,7 @@ class Article:
         pass
         #print("LOG: " + text)
 
-class Word:
+class Word(WikiBase):
 
     def __init__(self, title, lang, wtype):
         self.title = title

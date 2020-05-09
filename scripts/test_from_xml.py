@@ -25,7 +25,7 @@ with open(out_file, "w") as outf:
         elif title != None and tag == "text" and event == "end":
             article = Article(title, elem.text)
             for word in article.words:
-                outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")
+                outf.write(json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n")
             title = None
             elem.clear()
 

@@ -196,6 +196,11 @@ class Article(WikiBase):
                     def_line = self.clean_def(def_line)
                     cur_word.add_def(def_line.strip())
 
+        if cur_word:
+            words.append(cur_word)
+
+        if len(words) == 0 and not re.match("#REDIRECT", text):
+            self.log("No word parsed")
         return words
 
     def _template_def(self, match):

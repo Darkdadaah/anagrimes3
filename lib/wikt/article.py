@@ -6,8 +6,8 @@ from wikt.data import word_types, word_attributes
 class WikiBase(object):
 
     section_regex = re.compile("^(=+) *(.+?) *(=+)$")
-    template_inside_regex = re.compile("^ *\{\{ *(.+) *\}\} *$")
-    template_parts_regex = re.compile("^ *(.+?) *= *(.+?) *$")
+    template_inside_regex = re.compile("^ *\{\{ *([^\}]+) *\}\} *$")
+    template_parts_regex = re.compile("^ *(.+?) *= *(.*?) *$")
     empty_regex = re.compile("^ *$")
 
     def log(self, name, detail=""):

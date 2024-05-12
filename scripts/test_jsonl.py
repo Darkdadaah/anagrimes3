@@ -18,4 +18,4 @@ print(out_file)
 
 with open(out_file, "w") as outf:
     for word in a.words:
-     outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")
+        outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")

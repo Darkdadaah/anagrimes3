@@ -7,9 +7,11 @@ from wikt.article import Article
 from lxml import etree as ET
 import argparse
 
-parser = argparse.ArgumentParser(description="Parse a Wiktionnaire xml dump into a json array")
-parser.add_argument('input', type=str, help='xml dump path')
-parser.add_argument('output', type=str, help='json output path')
+parser = argparse.ArgumentParser(
+    description="Parse a Wiktionnaire xml dump into a json array"
+)
+parser.add_argument("input", type=str, help="xml dump path")
+parser.add_argument("output", type=str, help="json output path")
 args = parser.parse_args()
 
 xml_file = args.input
@@ -25,9 +27,9 @@ with open(out_file, "w") as outf:
     noword = 0
 
     outf.write("[\n")
-    context = ET.iterparse(xml_file, events=("start","end"))
+    context = ET.iterparse(xml_file, events=("start", "end"))
     for event, elem in context:
-        _, _, tag = elem.tag.rpartition('}')
+        _, _, tag = elem.tag.rpartition("}")
 
         if tag == "page" and event == "end":
             page_ns = int(elem.find(xml_ns + "ns").text)
@@ -47,9 +49,11 @@ with open(out_file, "w") as outf:
             for word in article.words:
                 if num > 1:
                     outf.write(",\n")
-                outf.write(json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n")
-            
-            for ancestor in elem.xpath('ancestor-or-self::*'):
+                outf.write(
+                    json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n"
+                )
+
+            for ancestor in elem.xpath("ancestor-or-self::*"):
                 while ancestor.getprevious() is not None:
                     del ancestor.getparent()[0]
 
@@ -59,4 +63,3 @@ with open(out_file, "w") as outf:
 
     del context
     outf.write("]\n")
-

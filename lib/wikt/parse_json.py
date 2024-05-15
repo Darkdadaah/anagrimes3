@@ -1,4 +1,4 @@
-"""Parse a Wiktionnaire xml dump into a json array"""
+"""Parse a Wiktionnaire xml dump into a jsonl format."""
 
 import json
 
@@ -27,7 +27,6 @@ def main():
         skipped = 0
         noword = 0
 
-        outf.write("[\n")
         context = etree.iterparse(xml_file, events=("start", "end"))
         for event, elem in context:
             _, _, tag = elem.tag.rpartition("}")
@@ -48,9 +47,7 @@ def main():
                 article = Article(title, text)
 
                 for word in article.words:
-                    if num > 1:
-                        outf.write(",\n")
-                    outf.write(json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n")
+                    outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")
 
                 for ancestor in elem.xpath("ancestor-or-self::*"):
                     while ancestor.getprevious() is not None:
@@ -61,7 +58,6 @@ def main():
         print(f"{noword} pages without words")
 
         del context
-        outf.write("]\n")
 
 
 if __name__ == "__main__":

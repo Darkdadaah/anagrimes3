@@ -6,10 +6,10 @@ from wikt.data import word_types, word_attributes
 
 class WikiBase(object):
 
-    section_regex = re.compile("^(=+) *(.+?) *(=+)$")
-    template_inside_regex = re.compile("^ *\{\{ *([^\}]+) *\}\} *$")
-    template_parts_regex = re.compile("^ *(.+?) *= *(.*?) *$")
-    empty_regex = re.compile("^ *$")
+    section_regex = re.compile(r"^(=+) *(.+?) *(=+)$")
+    template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
+    template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
+    empty_regex = re.compile(r"^ *$")
 
     def log(self, name, detail=""):
         print("LOG\t[[%s]]\t%s\t%s" % (self.title, name, detail), file=sys.stderr)
@@ -253,10 +253,10 @@ class Article(WikiBase):
 
     def clean_def(self, line):
         # Remove wiki links
-        line = re.sub("\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
+        line = re.sub(r"\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
 
         # Remove templates links with 1 parameter
-        line = re.sub("(\{\{.+?\}\})", self._template_def, line)
+        line = re.sub(r"(\{\{.+?\}\})", self._template_def, line)
 
         # Remove italic and bold
         line = re.sub("'''(.+)'''", r"\1", line)
@@ -321,8 +321,8 @@ class Word(WikiBase):
 
 class Form(WikiBase):
 
-    form_regex = re.compile("^'''(.+?)''' ?(.+)? *$")
-    template_regex = re.compile("(\{\{[^\}]+?\}\})")
+    form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
+    template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
     def __init__(self, title, form_line):
         self.title = title

@@ -128,8 +128,6 @@ word_types = {
     "loc": "loc",
     "locution-phrase": "phr",
     "loc-phr": "phr",
-    "locution-phrase": "phr",
-    "locution phrase": "phr",
     "proverbe": "prov",
     "prov": "prov",
     "quantificateur": "quantif",

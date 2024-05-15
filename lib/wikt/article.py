@@ -376,7 +376,7 @@ class Form(WikiBase):
 
         for temp_str in temps:
             parts = self.parse_template(temp_str)
-            title = parts["0"]
+            title = parts.get("0", "")
             if title in templates:
                 templates[title].append(parts)
             else:

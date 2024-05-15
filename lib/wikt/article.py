@@ -1,45 +1,52 @@
-#!/usr/bin/python
+"""Main Wiktionnaire articles representation."""
 
-import re, sys
+import re
+import sys
 from wikt.data import word_types, word_attributes
 
 
-class WikiBase(object):
+class WikiBase:
+    """A wiki page with basic parsing."""
 
     section_regex = re.compile(r"^(=+) *(.+?) *(=+)$")
     template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
     template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
     empty_regex = re.compile(r"^ *$")
 
+    def __init__(self, title: str) -> None:
+        self.title = title
+
     def log(self, name, detail=""):
-        print("LOG\t[[%s]]\t%s\t%s" % (self.title, name, detail), file=sys.stderr)
+        print(f"LOG\t[[{self.title}]]\t{name}\t{detail}", file=sys.stderr)
 
     def debug(self, name, details=""):
         pass
         # self.log(name, details)
 
     def parse_section(self, section_str):
-        # Extract the level and content of the section title
-        if sec_match := self.section_regex.search(section_str.strip()):
-            sec_start = sec_match.group(1)
-            sec_title = sec_match.group(2)
-            sec_end = sec_match.group(3)
-
-            # Get level
-            sec_level = 0
-            for nlevel in range(2, 6):
-                sec_signs = "=" * nlevel
-                if sec_start == sec_signs:
-                    sec_level = nlevel
-                    if sec_end != sec_signs:
-                        self.log("Section level start and end differ", section_str)
-
-            return (sec_level, sec_title)
-        else:
+        """Extract the level and content of the section title."""
+        sec_match = self.section_regex.search(section_str.strip())
+        if not sec_match:
             self.log("Can't parse section", section_str)
             return (0, "")
 
+        sec_start = sec_match.group(1)
+        sec_title = sec_match.group(2)
+        sec_end = sec_match.group(3)
+
+        # Get level
+        sec_level = 0
+        for nlevel in range(2, 6):
+            sec_signs = "=" * nlevel
+            if sec_start == sec_signs:
+                sec_level = nlevel
+                if sec_end != sec_signs:
+                    self.log("Section level start and end differ", section_str)
+
+        return (sec_level, sec_title)
+
     def parse_template(self, template_str):
+        """Parse a template string."""
         template = {}
 
         if templ_match := self.template_inside_regex.search(template_str):
@@ -63,6 +70,7 @@ class WikiBase(object):
 
 
 class Article(WikiBase):
+    """A Wiktionnaire article."""
 
     def_regex = re.compile("^#+([^#*:] *.+)$")
 
@@ -77,23 +85,24 @@ class Article(WikiBase):
     temp_def_no_capitalize = ["cf"]
 
     def __init__(self, title, text):
-        self.title = title
+        super().__init__(title)
         self.words = self.parse(title, text)
 
     def parse(self, title, text):
+        """Parse a Wiktionnaire article."""
         words = []
 
         # Parse language sections
         lang = ""
         cur_word = None
-        if text == None:
+        if text is None:
             return words
         for line in text.split("\n"):
             # Get title elements
             if line.startswith("=="):
                 (level, sec_title) = self.parse_section(line)
 
-                if level == None or self.empty_regex.search(sec_title):
+                if level is None or self.empty_regex.search(sec_title):
                     self.debug("Skip section", line)
                     continue
 
@@ -101,7 +110,7 @@ class Article(WikiBase):
                 if level == 2:
                     section = self.parse_template(sec_title)
 
-                    if section == {}:
+                    if not section:
                         self.log("Section 2 is not a template", line)
                         continue
 
@@ -126,7 +135,7 @@ class Article(WikiBase):
                 elif lang and level == 3:
                     section = self.parse_template(sec_title)
 
-                    if section == {}:
+                    if not section:
                         self.log("Section 3 is not a template", line)
                         continue
 
@@ -142,8 +151,7 @@ class Article(WikiBase):
                                 add_word = False
 
                                 # Get word lang
-                                if "2" in section:
-                                    wlang = section["2"]
+                                wlang = section.get("2")
 
                                 # Get controlled type name
                                 if sname in word_types:
@@ -151,7 +159,7 @@ class Article(WikiBase):
                                     add_word = True
 
                                 # Check if this is considered a word section
-                                if add_word and wlang == None:
+                                if add_word and wlang is None:
                                     wlang = lang
                                     self.log("Word has no lang", lang)
 
@@ -162,9 +170,7 @@ class Article(WikiBase):
                                         cur_word = None
 
                                     # Number
-                                    number = 1
-                                    if "num" in section:
-                                        number = section["num"]
+                                    number = section.get("num", 1)
 
                                     # Check if flexion
                                     is_flexion = False
@@ -172,9 +178,7 @@ class Article(WikiBase):
                                         if section["3"] == "flexion":
                                             is_flexion = True
                                         else:
-                                            self.log(
-                                                "Parameter 3 should be flexion", line
-                                            )
+                                            self.log("Parameter 3 should be flexion", line)
 
                                     # Check if locution
                                     is_locution = False
@@ -194,7 +198,7 @@ class Article(WikiBase):
                                     if wlang != lang:
                                         self.log(
                                             "Langue section parameter is different from word section section",
-                                            "%s vs %s" % (lang, wlang),
+                                            f"{lang} vs {wlang}",
                                         )
                             else:
                                 self.log("Level 3 section has no type parameter", line)
@@ -227,18 +231,14 @@ class Article(WikiBase):
         template_str = match.group(1)
         parts = self.parse_template(template_str)
 
-        title = None
-        par = None
-        if "0" in parts:
-            title = parts["0"]
-        if "1" in parts:
-            par = parts["1"]
+        title = parts.get("0")
+        par = parts.get("1")
 
         temp_str = ""
-        if title in self.temp_def_keep_with_par and par != None:
+        if title in self.temp_def_keep_with_par and par is not None:
             temp_str = title + " " + par
 
-        elif title in self.temp_def_keep_only_par and par != None:
+        elif title in self.temp_def_keep_only_par and par is not None:
             temp_str = par
         else:
             temp_str = title
@@ -252,6 +252,7 @@ class Article(WikiBase):
         return temp_str
 
     def clean_def(self, line):
+        """Clean up a definition string to only keep the text."""
         # Remove wiki links
         line = re.sub(r"\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
 
@@ -265,16 +266,15 @@ class Article(WikiBase):
         return line
 
     def __str__(self):
-        lines = ["TITLE = %s" % self.title, "WORDS = %d" % len(self.words)]
+        lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
 
 class Word(WikiBase):
+    """A Wiktionnaire word section representation."""
 
-    def __init__(
-        self, title, lang, wtype, is_flexion=False, is_locution=False, number=None
-    ):
-        self.title = title
+    def __init__(self, title, lang, wtype, is_flexion=False, is_locution=False, number=None):
+        super().__init__(title)
         self.lang = lang
         self.type = wtype
         self.form = None
@@ -284,22 +284,25 @@ class Word(WikiBase):
         self.number = number
 
     def add_def(self, def_line):
+        """Add a definition from a definition line."""
         self.defs.append(def_line)
 
     def add_form(self, form):
+        """Add a form from a form line."""
         self.form = form
 
     def __str__(self):
         lines = [
-            "TITLE = %s" % self.title,
-            "LANG  = %s" % self.lang,
-            "TYPE  = %s" % self.type,
-            "PRONS = %s" % self.form.prons,
-            "DEFS  = %d" % len(self.defs),
+            f"TITLE = {self.title}",
+            f"LANG  = {self.lang}",
+            f"TYPE  = {self.type}",
+            f"PRONS = {self.form.prons}",
+            f"DEFS  = {len(self.defs)}",
         ]
         return "\n\t".join(lines)
 
-    def struct(self):
+    def struct(self) -> dict:
+        """Returns a json structure representing the word section."""
         struct = {
             "title": self.title,
             "lang": self.lang,
@@ -320,12 +323,13 @@ class Word(WikiBase):
 
 
 class Form(WikiBase):
+    """Word form line parsing."""
 
     form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
     template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
     def __init__(self, title, form_line):
-        self.title = title
+        super().__init__(title)
         self.form = None
         self.prons = []
         self.attributes = []
@@ -333,7 +337,7 @@ class Form(WikiBase):
         self.parse_form_line(form_line)
 
     def parse_form_line(self, line):
-        # Form line is like this: '''(WORD)''' (PROPERTIES in templates)
+        """Parse a form line in the form '''(WORD)''' (PROPERTIES in templates)"""
         templates = self.get_templates(line)
 
         # Get pronunciations
@@ -346,23 +350,26 @@ class Form(WikiBase):
                     self.add_pron(pron_str)
 
         # Get other attributes
-        for attr in word_attributes:
+        for attr, full_attr_name in word_attributes.items():
             if attr in templates:
-                self.add_attribute(word_attributes[attr])
+                self.add_attribute(full_attr_name)
 
     def add_pron(self, pron_str):
+        """Add a pronunciation for that word."""
         self.prons.append(pron_str)
 
     def add_attribute(self, attr):
+        """Add an attribute for that word."""
         if attr not in self.attributes:
             self.attributes.append(attr)
         else:
             self.log("Attribute written twice", attr)
 
     def get_templates(self, string):
+        """Retrieve all templates from a wiki string."""
         templates = {}
 
-        if string == None:
+        if string is None:
             return templates
 
         temps = self.template_regex.findall(string)

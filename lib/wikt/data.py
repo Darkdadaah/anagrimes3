@@ -1,3 +1,5 @@
+"""Dicts of template names to standardize names."""
+
 word_types = {
     "adjectif": "adj",
     "adj": "adj",

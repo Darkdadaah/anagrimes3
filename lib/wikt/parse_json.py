@@ -50,9 +50,7 @@ def main():
                 for word in article.words:
                     if num > 1:
                         outf.write(",\n")
-                    outf.write(
-                        json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n"
-                    )
+                    outf.write(json.dumps(word.struct(), ensure_ascii=False, indent=4) + "\n")
 
                 for ancestor in elem.xpath("ancestor-or-self::*"):
                     while ancestor.getprevious() is not None:
@@ -64,6 +62,7 @@ def main():
 
         del context
         outf.write("]\n")
+
 
 if __name__ == "__main__":
     main()

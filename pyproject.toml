@@ -51,6 +51,7 @@ disable = [
     "too-many-statements",
     "unspecified-encoding",
     "wildcard-import",
+    "c-extension-no-member",
 ]
 max-attributes = 12
 

@@ -1,16 +1,16 @@
-#!/usr/bin/python
+"""Parse a Wiktionnaire xml dump into a json array"""
 
 import json
 
-from lxml import etree as ET
 import argparse
+from lxml import etree
 
 from .article import Article
 
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Parse a Wiktionnaire xml dump into a json array"
-    )
+    """main entrypoint"""
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=str, help="xml dump path")
     parser.add_argument("output", type=str, help="json output path")
     args = parser.parse_args()
@@ -28,7 +28,7 @@ def main():
         noword = 0
 
         outf.write("[\n")
-        context = ET.iterparse(xml_file, events=("start", "end"))
+        context = etree.iterparse(xml_file, events=("start", "end"))
         for event, elem in context:
             _, _, tag = elem.tag.rpartition("}")
 
@@ -58,9 +58,9 @@ def main():
                     while ancestor.getprevious() is not None:
                         del ancestor.getparent()[0]
 
-        print("%d pages parsed" % num)
-        print("%d pages skipped" % skipped)
-        print("%d pages without words" % noword)
+        print(f"{num} pages parsed")
+        print(f"{skipped} pages skipped")
+        print(f"{noword} pages without words")
 
         del context
         outf.write("]\n")

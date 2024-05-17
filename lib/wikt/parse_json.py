@@ -1,6 +1,7 @@
 """Parse a Wiktionnaire xml dump into a jsonl format."""
 
 import json
+import logging
 
 import argparse
 from lxml import etree
@@ -13,7 +14,25 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=str, help="xml dump path")
     parser.add_argument("output", type=str, help="json output path")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Be verbose",
+        action="store_const",
+        dest="loglevel",
+        const=logging.INFO,
+        default=logging.WARNING,
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        help="Print lots of debugging statements",
+        action="store_const",
+        dest="loglevel",
+        const=logging.DEBUG,
+    )
     args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel)
 
     xml_file = args.input
     out_file = args.output

@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 from wikt.data import word_types, word_attributes
 
 
-class Template(dict):
+class Template:
     """Template representation."""
 
     def __init__(
@@ -62,10 +62,7 @@ class TemplateFactory:
 
 
 class WikiBase:
-    """A wiki page with basic parsing."""
-
-    section_regex = re.compile(r"^(=+) *(.+?) *(=+)$")
-    empty_regex = re.compile(r"^ *$")
+    """A base Wiki object with an article title."""
 
     def __init__(self, title: str) -> None:
         self.title = title
@@ -78,229 +75,67 @@ class WikiBase:
         """Custom print to log as debug."""
         logging.debug(f"DEBUG\t[[{self.title}]]\t{name}\t{detail}")
 
-    def parse_section(self, section_str: str) -> Tuple[int, str]:
-        """Extract the level and content of the section title."""
-        sec_match = self.section_regex.search(section_str.strip())
-        if not sec_match:
-            self.log("Can't parse section", section_str)
-            return (0, "")
 
-        sec_start = sec_match.group(1)
-        sec_title = sec_match.group(2)
-        sec_end = sec_match.group(3)
+class Form(WikiBase):
+    """Word form line parsing."""
 
-        # Get level
-        sec_level = 0
-        for nlevel in range(2, 6):
-            sec_signs = "=" * nlevel
-            if sec_start == sec_signs:
-                sec_level = nlevel
-                if sec_end != sec_signs:
-                    self.log("Section level start and end differ", section_str)
+    form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
+    template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
-        return (sec_level, sec_title)
-
-
-class Article(WikiBase):
-    """A Wiktionnaire article."""
-
-    def_regex = re.compile("^#+([^#*:] *.+)$")
-
-    temp_def_keep_only_par = ["term", "lien"]
-    temp_def_keep_with_par = [
-        "cf",
-        "variante",
-        "variante ortho de",
-        "variante orthographique de",
-    ]
-    temp_def_no_parentheses = temp_def_keep_with_par
-    temp_def_no_capitalize = ["cf"]
-
-    def __init__(self, title: str, text: str) -> None:
+    def __init__(self, title: str, form_line: str) -> None:
         super().__init__(title)
-        self.words: List[Word] = self.parse(title, text)
+        self.form = None
+        self.prons: List[str] = []
+        self.attributes: List[str] = []
 
-    def __str__(self):
-        lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
-        return "\n".join(lines)
+        self.parse_form_line(form_line)
 
-    def parse(self, title: str, text: str) -> List[Word]:
-        """Parse a Wiktionnaire article."""
-        words = []
+    def parse_form_line(self, line: str) -> None:
+        """Parse a form line in the form '''(WORD)''' (PROPERTIES in templates)"""
+        templates: Dict[str, List[Template]] = self.get_templates(line)
 
-        # Parse language sections
-        lang = ""
-        cur_word = None
-        if text is None:
-            return words
-        for line in text.split("\n"):
-            # Get title elements
-            if line.startswith("=="):
-                (level, sec_title) = self.parse_section(line)
+        # Get pronunciations
+        if "pron" in templates:
+            prons = templates["pron"]
 
-                if level is None or self.empty_regex.search(sec_title):
-                    self.debug("Skip section", line)
-                    continue
+            for pron in prons:
+                if pron.list_params:
+                    pron_str = pron.list_params[0]
+                    self.add_pron(pron_str)
 
-                # Language section
-                if level == 2:
-                    section = TemplateFactory.parse_template(sec_title)
+        # Get other attributes
+        for attr, full_attr_name in word_attributes.items():
+            if attr in templates:
+                self.add_attribute(full_attr_name)
 
-                    if not section:
-                        self.log("Section 2 is not a template", line)
-                        continue
+    def add_pron(self, pron_str: str) -> None:
+        """Add a pronunciation for that word."""
+        self.prons.append(pron_str)
 
-                    if section and "0" in section:
-                        templ_name = section["0"]
-
-                        if templ_name == "langue":
-                            if "1" in section:
-                                lang = section["1"]
-                            else:
-                                lang = ""
-                                self.log("Langue section has no lang parameter", line)
-                        elif templ_name == "caractère":
-                            lang = ""
-                            self.debug("Skip Caractere section", line)
-                        else:
-                            lang = ""
-                            self.log("Unrecognized level 2 section template", line)
-                    else:
-                        lang = ""
-                        self.log("Unrecognized level 2 section", line)
-                elif lang and level == 3:
-                    section = TemplateFactory.parse_template(sec_title)
-
-                    if not section:
-                        self.log("Section 3 is not a template", line)
-                        continue
-
-                    if section and "0" in section:
-                        templ_name = section["0"]
-
-                        # Section template
-                        if templ_name == "S":
-                            if "1" in section:
-                                sname = section["1"]
-                                wlang = None
-                                wtype = ""
-                                add_word = False
-
-                                # Get word lang
-                                wlang = section.get("2")
-
-                                # Get controlled type name
-                                if sname in word_types:
-                                    wtype = word_types[sname]
-                                    add_word = True
-
-                                # Check if this is considered a word section
-                                if add_word and wlang is None:
-                                    wlang = lang
-                                    self.log("Word has no lang", lang)
-
-                                # Create a word
-                                if add_word:
-                                    if cur_word:
-                                        words.append(cur_word)
-                                        cur_word = None
-
-                                    # Number
-                                    number = section.get("num", 1)
-
-                                    # Check if flexion
-                                    is_flexion = False
-                                    if "3" in section:
-                                        if section["3"] == "flexion":
-                                            is_flexion = True
-                                        else:
-                                            self.log("Parameter 3 should be flexion", line)
-
-                                    # Check if locution
-                                    is_locution = False
-                                    if " " in self.title:
-                                        is_locution = True
-
-                                    cur_word = Word(
-                                        title,
-                                        lang,
-                                        wtype,
-                                        is_flexion=is_flexion,
-                                        is_locution=is_locution,
-                                        number=number,
-                                    )
-
-                                    # TODO: check that is a word type
-                                    if wlang != lang:
-                                        self.log(
-                                            "Langue section parameter is different from word section section",
-                                            f"{lang} vs {wlang}",
-                                        )
-                            else:
-                                self.log("Level 3 section has no type parameter", line)
-                        else:
-                            self.log("Unrecognized level 3 template", line)
-                    else:
-                        self.log("Unrecognized level 3 section", line)
-                elif cur_word:
-                    words.append(cur_word)
-                    cur_word = None
-
-            elif line.startswith("'''") and lang and cur_word:
-                form = Form(title, line)
-                cur_word.add_form(form)
-
-            elif line.startswith("#") and lang and cur_word:
-                if def_match := self.def_regex.search(line):
-                    def_line = def_match.group(1)
-                    def_line = self.clean_def(def_line)
-                    cur_word.add_def(def_line.strip())
-
-        if cur_word:
-            words.append(cur_word)
-
-        if len(words) == 0 and not re.match("#REDIRECT", text):
-            self.log("No word parsed")
-        return words
-
-    def _template_def(self, match: Match) -> str:
-        template_str = match.group(1)
-        template = TemplateFactory.parse_template(template_str)
-        title = template.title
-        par = ""
-        if len(template.list_params) > 0:
-            par = template.list_params[0]
-
-        temp_str = ""
-        if title in self.temp_def_keep_with_par and par is not None:
-            temp_str = title + " " + par
-
-        elif title in self.temp_def_keep_only_par and par is not None:
-            temp_str = par
+    def add_attribute(self, attr: str) -> None:
+        """Add an attribute for that word."""
+        if attr not in self.attributes:
+            self.attributes.append(attr)
         else:
-            temp_str = title
+            self.log("Attribute written twice", attr)
 
-        if title not in self.temp_def_no_capitalize:
-            temp_str = temp_str.capitalize()
+    def get_templates(self, string: str) -> Dict[str, List[Template]]:
+        """Retrieve all templates from a wiki string."""
+        templates: Dict[str, List[Template]] = {}
 
-        if title not in self.temp_def_no_parentheses:
-            temp_str = "(" + temp_str + ")"
+        if string is None:
+            return templates
 
-        return temp_str
+        template_strings = self.template_regex.findall(string)
 
-    def clean_def(self, line: str) -> str:
-        """Clean up a definition string to only keep the text."""
-        # Remove wiki links
-        line = re.sub(r"\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
+        for temp_str in template_strings:
+            template = TemplateFactory.parse_template(temp_str)
+            if template.title in templates:
+                templates[template.title].append(template)
+            else:
+                templates[template.title] = [template]
 
-        # Remove templates links with 1 parameter
-        line = re.sub(r"(\{\{.+?\}\})", self._template_def, line)
-
-        # Remove italic and bold
-        line = re.sub("'''(.+)'''", r"\1", line)
-        line = re.sub("''(.+)''", r"\1", line)
-
-        return line
+        return templates
 
 
 class Word(WikiBase):
@@ -363,63 +198,226 @@ class Word(WikiBase):
         return struct
 
 
-class Form(WikiBase):
-    """Word form line parsing."""
+class WikiArticle(WikiBase):
+    """General Wiki page split in wiki sections."""
 
-    form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
-    template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
+    section_regex = re.compile(r"^(=+) *(.+?) *(=+)$")
+    empty_regex = re.compile(r"^ *$")
 
-    def __init__(self, title: str, form_line: str) -> None:
+    def parse_section(self, section_str: str) -> Tuple[int, str]:
+        """Extract the level and content of the section title."""
+        sec_match = self.section_regex.search(section_str.strip())
+        if not sec_match:
+            self.log("Can't parse section", section_str)
+            return (0, "")
+
+        sec_start = sec_match.group(1)
+        sec_title = sec_match.group(2)
+        sec_end = sec_match.group(3)
+
+        # Get level
+        sec_level = 0
+        for nlevel in range(2, 6):
+            sec_signs = "=" * nlevel
+            if sec_start == sec_signs:
+                sec_level = nlevel
+                if sec_end != sec_signs:
+                    self.log("Section level start and end differ", section_str)
+
+        return (sec_level, sec_title)
+
+
+class Article(WikiArticle):
+    """A Wiktionnaire article."""
+
+    def_regex = re.compile("^#+([^#*:] *.+)$")
+
+    temp_def_keep_only_par = ["term", "lien"]
+    temp_def_keep_with_par = [
+        "cf",
+        "variante",
+        "variante ortho de",
+        "variante orthographique de",
+    ]
+    temp_def_no_parentheses = temp_def_keep_with_par
+    temp_def_no_capitalize = ["cf"]
+
+    def __init__(self, title: str, text: str) -> None:
         super().__init__(title)
-        self.form = None
-        self.prons: List[str] = []
-        self.attributes: List[str] = []
+        self.words: List[Word] = self.parse(title, text)
 
-        self.parse_form_line(form_line)
+    def __str__(self):
+        lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
+        return "\n".join(lines)
 
-    def parse_form_line(self, line: str) -> None:
-        """Parse a form line in the form '''(WORD)''' (PROPERTIES in templates)"""
-        templates = self.get_templates(line)
+    def parse(self, title: str, text: str) -> List[Word]:
+        """Parse a Wiktionnaire article."""
+        words = []
 
-        # Get pronunciations
-        if "pron" in templates:
-            prons = templates["pron"]
+        # Parse language sections
+        lang = ""
+        cur_word = None
+        if text is None:
+            return words
+        for line in text.split("\n"):
+            # Get title elements
+            if line.startswith("=="):
+                (level, sec_title) = self.parse_section(line)
 
-            for pron in prons:
-                if "1" in pron:
-                    pron_str = pron["1"]
-                    self.add_pron(pron_str)
+                if level is None or self.empty_regex.search(sec_title):
+                    self.debug("Skip section", line)
+                    continue
 
-        # Get other attributes
-        for attr, full_attr_name in word_attributes.items():
-            if attr in templates:
-                self.add_attribute(full_attr_name)
+                # Language section
+                if level == 2:
+                    section = TemplateFactory.parse_template(sec_title)
 
-    def add_pron(self, pron_str: str) -> None:
-        """Add a pronunciation for that word."""
-        self.prons.append(pron_str)
+                    if not section:
+                        self.log("Section 2 is not a template", line)
+                        continue
 
-    def add_attribute(self, attr: str) -> None:
-        """Add an attribute for that word."""
-        if attr not in self.attributes:
-            self.attributes.append(attr)
+                    if section.title == "langue":
+                        pars = section.list_params
+                        if pars:
+                            lang = pars[0]
+                        else:
+                            lang = ""
+                            self.log("Langue section has no lang parameter", line)
+                    elif section.title == "caractère":
+                        lang = ""
+                        self.debug("Skip Caractere section", line)
+                    else:
+                        lang = ""
+                        self.log("Unrecognized level 2 section template", line)
+                elif lang and level == 3:
+                    section = TemplateFactory.parse_template(sec_title)
+
+                    if not section:
+                        self.log("Section 3 is not a template", line)
+                        continue
+
+                    templ_name = section.title
+
+                    # Section template
+                    if templ_name == "S":
+                        pars = section.list_params
+                        if pars:
+                            sname = pars[0]
+                            wlang = None
+                            wtype = ""
+                            add_word = False
+
+                            # Get word lang
+                            if len(pars) > 1:
+                                wlang = pars[1]
+
+                            # Get controlled type name
+                            if sname in word_types:
+                                wtype = word_types[sname]
+                                add_word = True
+
+                            # Check if this is considered a word section
+                            if add_word and wlang is None:
+                                wlang = lang
+                                self.log("Word has no lang", lang)
+
+                            # Create a word
+                            if add_word:
+                                if cur_word:
+                                    words.append(cur_word)
+                                    cur_word = None
+
+                                # Number
+                                number = int(section.dict_params.get("num", 1))
+
+                                # Check if flexion
+                                is_flexion = False
+                                if len(pars) > 2:
+                                    if pars[2] == "flexion":
+                                        is_flexion = True
+                                    else:
+                                        self.log("Parameter 3 should be flexion", line)
+
+                                # Check if locution
+                                is_locution = False
+                                if " " in self.title:
+                                    is_locution = True
+
+                                cur_word = Word(
+                                    title,
+                                    lang,
+                                    wtype,
+                                    is_flexion=is_flexion,
+                                    is_locution=is_locution,
+                                    number=number,
+                                )
+
+                                # TODO: check that is a word type
+                                if wlang != lang:
+                                    self.log(
+                                        "Langue section parameter is different from word section section",
+                                        f"{lang} vs {wlang}",
+                                    )
+                        else:
+                            self.log("Level 3 section has no type parameter", line)
+                    else:
+                        self.log("Unrecognized level 3 template", line)
+                elif cur_word:
+                    words.append(cur_word)
+                    cur_word = None
+
+            elif line.startswith("'''") and lang and cur_word:
+                form = Form(title, line)
+                cur_word.add_form(form)
+
+            elif line.startswith("#") and lang and cur_word:
+                if def_match := self.def_regex.search(line):
+                    def_line = def_match.group(1)
+                    def_line = self.clean_def(def_line)
+                    cur_word.add_def(def_line.strip())
+
+        if cur_word:
+            words.append(cur_word)
+
+        if len(words) == 0 and not re.match("#REDIRECT", text):
+            self.log("No word parsed")
+        return words
+
+    def _template_def(self, match: Match) -> str:
+        template_str = match.group(1)
+        template = TemplateFactory.parse_template(template_str)
+        title = template.title
+        par = ""
+        if len(template.list_params) > 0:
+            par = template.list_params[0]
+
+        temp_str = ""
+        if title in self.temp_def_keep_with_par and par is not None:
+            temp_str = title + " " + par
+
+        elif title in self.temp_def_keep_only_par and par is not None:
+            temp_str = par
         else:
-            self.log("Attribute written twice", attr)
+            temp_str = title
 
-    def get_templates(self, string: str) -> Dict[str, List[Template]]:
-        """Retrieve all templates from a wiki string."""
-        templates: Dict[str, List[Template]] = {}
+        if title not in self.temp_def_no_capitalize:
+            temp_str = temp_str.capitalize()
 
-        if string is None:
-            return templates
+        if title not in self.temp_def_no_parentheses:
+            temp_str = "(" + temp_str + ")"
 
-        template_strings = self.template_regex.findall(string)
+        return temp_str
 
-        for temp_str in template_strings:
-            template = TemplateFactory.parse_template(temp_str)
-            if template.title in templates:
-                templates[template.title].append(template)
-            else:
-                templates[template.title] = [template]
+    def clean_def(self, line: str) -> str:
+        """Clean up a definition string to only keep the text."""
+        # Remove wiki links
+        line = re.sub(r"\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
 
-        return templates
+        # Remove templates links with 1 parameter
+        line = re.sub(r"(\{\{.+?\}\})", self._template_def, line)
+
+        # Remove italic and bold
+        line = re.sub("'''(.+)'''", r"\1", line)
+        line = re.sub("''(.+)''", r"\1", line)
+
+        return line

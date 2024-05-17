@@ -3,16 +3,68 @@
 import logging
 import re
 from re import Match
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 from wikt.data import word_types, word_attributes
+
+
+class Template(dict):
+    """Template representation."""
+
+    def __init__(
+        self, title: str, params_list: None | List[str] = None, params_dict: None | Dict[str, str] = None
+    ) -> None:
+        self.title = title
+
+        self.list_params = []
+        if params_list:
+            self.list_params = params_list
+
+        self.dict_params = {}
+        if params_dict:
+            self.dict_params = params_dict
+
+
+class TemplateFactory:
+    """Generate template/templates from a wiki string."""
+
+    template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
+    template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
+
+    @classmethod
+    def parse_template(cls, template_str: str) -> Template:
+        """Parse a template string."""
+        title = ""
+        params_dict = {}
+        params_list = []
+
+        if templ_match := cls.template_inside_regex.search(template_str):
+            templ_content = templ_match.group(1)
+            templ_parts = templ_content.split("|")
+
+            for part in templ_parts:
+                if part_match := cls.template_parts_regex.search(part):
+                    pkey = part_match.group(1)
+                    pval = part_match.group(2)
+                    if pval:
+                        params_dict[pkey] = pval
+                else:
+                    pval = part.strip()
+                    if not pval:
+                        continue
+                    if not title:
+                        title = pval
+                        continue
+                    params_list.append(pval)
+
+        template = Template(title, params_list=params_list, params_dict=params_dict)
+
+        return template
 
 
 class WikiBase:
     """A wiki page with basic parsing."""
 
     section_regex = re.compile(r"^(=+) *(.+?) *(=+)$")
-    template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
-    template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
     empty_regex = re.compile(r"^ *$")
 
     def __init__(self, title: str) -> None:
@@ -48,29 +100,6 @@ class WikiBase:
 
         return (sec_level, sec_title)
 
-    def parse_template(self, template_str: str) -> Dict[str, str]:
-        """Parse a template string."""
-        template = {}
-
-        if templ_match := self.template_inside_regex.search(template_str):
-            templ_content = templ_match.group(1)
-            templ_parts = templ_content.split("|")
-
-            part_i = 0
-            for part in templ_parts:
-                if part_match := self.template_parts_regex.search(part):
-                    pkey = part_match.group(1)
-                    pval = part_match.group(2)
-                    if pval != "":
-                        template[pkey] = pval
-                else:
-                    pval = part.strip()
-                    if pval != "":
-                        template[str(part_i)] = pval
-                    part_i += 1
-
-        return template
-
 
 class Article(WikiBase):
     """A Wiktionnaire article."""
@@ -89,13 +118,13 @@ class Article(WikiBase):
 
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title)
-        self.words: List[str] = self.parse(title, text)
+        self.words: List[Word] = self.parse(title, text)
 
     def __str__(self):
         lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
-    def parse(self, title: str, text: str) -> List[str]:
+    def parse(self, title: str, text: str) -> List[Word]:
         """Parse a Wiktionnaire article."""
         words = []
 
@@ -115,7 +144,7 @@ class Article(WikiBase):
 
                 # Language section
                 if level == 2:
-                    section = self.parse_template(sec_title)
+                    section = TemplateFactory.parse_template(sec_title)
 
                     if not section:
                         self.log("Section 2 is not a template", line)
@@ -128,19 +157,19 @@ class Article(WikiBase):
                             if "1" in section:
                                 lang = section["1"]
                             else:
-                                lang = None
+                                lang = ""
                                 self.log("Langue section has no lang parameter", line)
                         elif templ_name == "caractère":
-                            lang = None
+                            lang = ""
                             self.debug("Skip Caractere section", line)
                         else:
-                            lang = None
+                            lang = ""
                             self.log("Unrecognized level 2 section template", line)
                     else:
-                        lang = None
+                        lang = ""
                         self.log("Unrecognized level 2 section", line)
                 elif lang and level == 3:
-                    section = self.parse_template(sec_title)
+                    section = TemplateFactory.parse_template(sec_title)
 
                     if not section:
                         self.log("Section 3 is not a template", line)
@@ -154,7 +183,7 @@ class Article(WikiBase):
                             if "1" in section:
                                 sname = section["1"]
                                 wlang = None
-                                wtype = None
+                                wtype = ""
                                 add_word = False
 
                                 # Get word lang
@@ -236,10 +265,11 @@ class Article(WikiBase):
 
     def _template_def(self, match: Match) -> str:
         template_str = match.group(1)
-        parts = self.parse_template(template_str)
-
-        title = parts.get("0")
-        par = parts.get("1")
+        template = TemplateFactory.parse_template(template_str)
+        title = template.title
+        par = ""
+        if len(template.list_params) > 0:
+            par = template.list_params[0]
 
         temp_str = ""
         if title in self.temp_def_keep_with_par and par is not None:
@@ -288,8 +318,8 @@ class Word(WikiBase):
         super().__init__(title)
         self.lang = lang
         self.type = wtype
-        self.form = None
-        self.defs = []
+        self.form: Form = Form(title, "")
+        self.defs: List[str] = []
         self.is_flexion = is_flexion
         self.is_locution = is_locution
         self.number = number
@@ -298,7 +328,7 @@ class Word(WikiBase):
         """Add a definition from a definition line."""
         self.defs.append(def_line)
 
-    def add_form(self, form: str) -> None:
+    def add_form(self, form: Form) -> None:
         """Add a form from a form line."""
         self.form = form
 
@@ -312,7 +342,7 @@ class Word(WikiBase):
         ]
         return "\n\t".join(lines)
 
-    def struct(self) -> dict:
+    def struct(self) -> Dict[str, Any]:
         """Returns a json structure representing the word section."""
         struct = {
             "title": self.title,
@@ -342,8 +372,8 @@ class Form(WikiBase):
     def __init__(self, title: str, form_line: str) -> None:
         super().__init__(title)
         self.form = None
-        self.prons = []
-        self.attributes = []
+        self.prons: List[str] = []
+        self.attributes: List[str] = []
 
         self.parse_form_line(form_line)
 
@@ -376,21 +406,20 @@ class Form(WikiBase):
         else:
             self.log("Attribute written twice", attr)
 
-    def get_templates(self, string: str) -> Dict[str, str]:
+    def get_templates(self, string: str) -> Dict[str, List[Template]]:
         """Retrieve all templates from a wiki string."""
-        templates = {}
+        templates: Dict[str, List[Template]] = {}
 
         if string is None:
             return templates
 
-        temps = self.template_regex.findall(string)
+        template_strings = self.template_regex.findall(string)
 
-        for temp_str in temps:
-            parts = self.parse_template(temp_str)
-            title = parts.get("0", "")
-            if title in templates:
-                templates[title].append(parts)
+        for temp_str in template_strings:
+            template = TemplateFactory.parse_template(temp_str)
+            if template.title in templates:
+                templates[template.title].append(template)
             else:
-                templates[title] = [parts]
+                templates[template.title] = [template]
 
         return templates

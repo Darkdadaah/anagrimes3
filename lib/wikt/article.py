@@ -379,7 +379,7 @@ class Article(WikiArticle):
         if cur_word:
             words.append(cur_word)
 
-        if len(words) == 0 and not re.match("#REDIRECT", text):
+        if len(words) == 0 and not re.match("#REDIRECT", text, re.IGNORECASE):
             self.log("No word parsed")
         return words
 

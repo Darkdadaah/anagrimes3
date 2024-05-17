@@ -1,7 +1,9 @@
 """Main Wiktionnaire articles representation."""
 
+import logging
 import re
-import sys
+from re import Match
+from typing import Dict, List, Tuple
 from wikt.data import word_types, word_attributes
 
 
@@ -16,14 +18,15 @@ class WikiBase:
     def __init__(self, title: str) -> None:
         self.title = title
 
-    def log(self, name, detail=""):
-        print(f"LOG\t[[{self.title}]]\t{name}\t{detail}", file=sys.stderr)
+    def log(self, name: str, detail: str = "") -> None:
+        """Custom print to log as info."""
+        logging.info(f"LOG\t[[{self.title}]]\t{name}\t{detail}")
 
-    def debug(self, name, details=""):
-        pass
-        # self.log(name, details)
+    def debug(self, name: str, detail: str = "") -> None:
+        """Custom print to log as debug."""
+        logging.debug(f"DEBUG\t[[{self.title}]]\t{name}\t{detail}")
 
-    def parse_section(self, section_str):
+    def parse_section(self, section_str: str) -> Tuple[int, str]:
         """Extract the level and content of the section title."""
         sec_match = self.section_regex.search(section_str.strip())
         if not sec_match:
@@ -45,7 +48,7 @@ class WikiBase:
 
         return (sec_level, sec_title)
 
-    def parse_template(self, template_str):
+    def parse_template(self, template_str: str) -> Dict[str, str]:
         """Parse a template string."""
         template = {}
 
@@ -84,11 +87,15 @@ class Article(WikiBase):
     temp_def_no_parentheses = temp_def_keep_with_par
     temp_def_no_capitalize = ["cf"]
 
-    def __init__(self, title, text):
+    def __init__(self, title: str, text: str) -> None:
         super().__init__(title)
-        self.words = self.parse(title, text)
+        self.words: List[str] = self.parse(title, text)
 
-    def parse(self, title, text):
+    def __str__(self):
+        lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
+        return "\n".join(lines)
+
+    def parse(self, title: str, text: str) -> List[str]:
         """Parse a Wiktionnaire article."""
         words = []
 
@@ -227,7 +234,7 @@ class Article(WikiBase):
             self.log("No word parsed")
         return words
 
-    def _template_def(self, match):
+    def _template_def(self, match: Match) -> str:
         template_str = match.group(1)
         parts = self.parse_template(template_str)
 
@@ -251,7 +258,7 @@ class Article(WikiBase):
 
         return temp_str
 
-    def clean_def(self, line):
+    def clean_def(self, line: str) -> str:
         """Clean up a definition string to only keep the text."""
         # Remove wiki links
         line = re.sub(r"\[\[([^\|\]]+?\|)?([^\|\]]+?)\]\]", r"\2", line)
@@ -265,15 +272,19 @@ class Article(WikiBase):
 
         return line
 
-    def __str__(self):
-        lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
-        return "\n".join(lines)
-
 
 class Word(WikiBase):
     """A Wiktionnaire word section representation."""
 
-    def __init__(self, title, lang, wtype, is_flexion=False, is_locution=False, number=None):
+    def __init__(
+        self,
+        title: str,
+        lang: str,
+        wtype: str,
+        is_flexion: bool = False,
+        is_locution: bool = False,
+        number: int = 0,
+    ) -> None:
         super().__init__(title)
         self.lang = lang
         self.type = wtype
@@ -283,15 +294,15 @@ class Word(WikiBase):
         self.is_locution = is_locution
         self.number = number
 
-    def add_def(self, def_line):
+    def add_def(self, def_line: str) -> None:
         """Add a definition from a definition line."""
         self.defs.append(def_line)
 
-    def add_form(self, form):
+    def add_form(self, form: str) -> None:
         """Add a form from a form line."""
         self.form = form
 
-    def __str__(self):
+    def __str__(self) -> str:
         lines = [
             f"TITLE = {self.title}",
             f"LANG  = {self.lang}",
@@ -328,7 +339,7 @@ class Form(WikiBase):
     form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
     template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
-    def __init__(self, title, form_line):
+    def __init__(self, title: str, form_line: str) -> None:
         super().__init__(title)
         self.form = None
         self.prons = []
@@ -336,7 +347,7 @@ class Form(WikiBase):
 
         self.parse_form_line(form_line)
 
-    def parse_form_line(self, line):
+    def parse_form_line(self, line: str) -> None:
         """Parse a form line in the form '''(WORD)''' (PROPERTIES in templates)"""
         templates = self.get_templates(line)
 
@@ -354,18 +365,18 @@ class Form(WikiBase):
             if attr in templates:
                 self.add_attribute(full_attr_name)
 
-    def add_pron(self, pron_str):
+    def add_pron(self, pron_str: str) -> None:
         """Add a pronunciation for that word."""
         self.prons.append(pron_str)
 
-    def add_attribute(self, attr):
+    def add_attribute(self, attr: str) -> None:
         """Add an attribute for that word."""
         if attr not in self.attributes:
             self.attributes.append(attr)
         else:
             self.log("Attribute written twice", attr)
 
-    def get_templates(self, string):
+    def get_templates(self, string: str) -> Dict[str, str]:
         """Retrieve all templates from a wiki string."""
         templates = {}
 

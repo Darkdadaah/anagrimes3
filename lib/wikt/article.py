@@ -201,8 +201,8 @@ class Word(WikiBase):
 class WikiArticle(WikiBase):
     """General Wiki page split in wiki sections."""
 
-    section_regex = re.compile(r"^(=+) *(.+?) *(=+)$")
-    empty_regex = re.compile(r"^ *$")
+    section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")
+    empty_regex = re.compile(r"^\s*$")
 
     def parse_section(self, section_str: str) -> Tuple[int, str]:
         """Extract the level and content of the section title."""
@@ -361,7 +361,7 @@ class Article(WikiArticle):
                         else:
                             self.log("Level 3 section has no type parameter", line)
                     else:
-                        self.log("Unrecognized level 3 template", line)
+                        self.log(f"Unrecognized level 3 template from '{sec_title}'", line)
                 elif cur_word:
                     words.append(cur_word)
                     cur_word = None

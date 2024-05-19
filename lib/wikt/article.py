@@ -204,7 +204,7 @@ class WikiArticle(WikiBase):
     section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")
     empty_regex = re.compile(r"^\s*$")
 
-    def parse_section(self, section_str: str) -> Tuple[int, str]:
+    def parse_section_title(self, section_str: str) -> Tuple[int, str]:
         """Extract the level and content of the section title."""
         sec_match = self.section_regex.search(section_str.strip())
         if not sec_match:
@@ -244,33 +244,40 @@ class Article(WikiArticle):
 
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title)
-        self.words: List[Word] = self.parse(title, text)
+        self.words: List[Word] = self.parse_words(title, text)
 
     def __str__(self):
         lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
-    def parse(self, title: str, text: str) -> List[Word]:
-        """Parse a Wiktionnaire article."""
+    def parse_words(self, title: str, text: str) -> List[Word]:
+        """Parse a Wiktionnaire article into words."""
         words = []
 
         # Parse language sections
         lang = ""
         cur_word = None
-        if text is None:
-            return words
+
+        if not text:
+            self.log("No text")
+            return []
+
+        if re.match("#REDIRECT", text, re.IGNORECASE):
+            self.log("Redirect")
+            return []
+        
         for line in text.split("\n"):
             # Get title elements
             if line.startswith("=="):
-                (level, sec_title) = self.parse_section(line)
+                (level, section_title) = self.parse_section_title(line)
 
-                if level is None or self.empty_regex.search(sec_title):
+                if not level or not section_title:
                     self.debug("Skip section", line)
                     continue
 
                 # Language section
                 if level == 2:
-                    section = TemplateFactory.parse_template(sec_title)
+                    section = TemplateFactory.parse_template(section_title)
 
                     if not section:
                         self.log("Section 2 is not a template", line)
@@ -290,7 +297,7 @@ class Article(WikiArticle):
                         lang = ""
                         self.log("Unrecognized level 2 section template", line)
                 elif lang and level == 3:
-                    section = TemplateFactory.parse_template(sec_title)
+                    section = TemplateFactory.parse_template(section_title)
 
                     if not section:
                         self.log("Section 3 is not a template", line)
@@ -361,7 +368,7 @@ class Article(WikiArticle):
                         else:
                             self.log("Level 3 section has no type parameter", line)
                     else:
-                        self.log(f"Unrecognized level 3 template from '{sec_title}'", line)
+                        self.log(f"Unrecognized level 3 template from '{section_title}'", line)
                 elif cur_word:
                     words.append(cur_word)
                     cur_word = None
@@ -379,7 +386,7 @@ class Article(WikiArticle):
         if cur_word:
             words.append(cur_word)
 
-        if len(words) == 0 and not re.match("#REDIRECT", text, re.IGNORECASE):
+        if len(words) == 0:
             self.log("No word parsed")
         return words
 

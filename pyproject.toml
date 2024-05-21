@@ -1,0 +1,63 @@
+[project]
+name = "anagrimes3"
+dynamic = [
+    "version",
+]
+requires-python = ">= 3.12"
+description = "Anagrimes 3"
+readme = "README.md"
+authors = [
+    {name = "Darkdadaah", email = "darkdadaah@yahoo.fr"},
+]
+keywords = [
+    "wiktionary",
+]
+dependencies = [
+    "lxml",
+]
+
+[project.scripts]
+wikt_parse = "wikt.parse_json:main"
+
+[tool.setuptools]
+package-dir = {"" = "lib"}
+
+[tool.setuptools.dynamic]
+version = {attr = "wikt.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["lib"]
+
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools-scm",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 110
+
+[tool.pylint.main]
+max-line-length = 110
+disable = [
+    "invalid-name",
+    "logging-fstring-interpolation",
+    "similarities",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-locals",
+    "too-many-statements",
+    "unspecified-encoding",
+    "wildcard-import",
+    "c-extension-no-member",
+]
+max-attributes = 12
+
+[tool.mypy]
+mypy_path = "lib"
+explicit_package_bases = true
+ignore_missing_imports = true
+show_error_codes = true
+warn_unused_configs = true

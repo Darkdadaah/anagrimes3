@@ -241,6 +241,7 @@ class Article(WikiArticle):
     ]
     temp_def_no_parentheses = temp_def_keep_with_par
     temp_def_no_capitalize = ["cf"]
+    html_comment = re.compile("<!--.*?-->", flags=re.DOTALL)
 
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title)
@@ -261,6 +262,9 @@ class Article(WikiArticle):
         if not text:
             self.log("No text")
             return []
+
+        # Remove html comments
+        text = re.sub(self.html_comment, "", text)
 
         if re.match("#REDIRECT", text, re.IGNORECASE):
             self.log("Redirect")

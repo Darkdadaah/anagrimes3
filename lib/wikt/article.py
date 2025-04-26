@@ -4,6 +4,8 @@ import logging
 import re
 from re import Match
 from typing import Any, Dict, List, Tuple
+from typing_extensions import Self
+
 from wikt.data import word_types, word_attributes
 
 
@@ -226,6 +228,20 @@ class WikiArticle(WikiBase):
 
         return (sec_level, sec_title)
 
+    def get_sections(self) -> list[Section]:
+        return []
+
+
+class Section:
+    """A wiki section."""
+    title: str
+    level: int
+    text: str
+    subsections: list[Self]
+
+    def __init__(self):
+        pass
+
 
 class Article(WikiArticle):
     """A Wiktionnaire article."""
@@ -269,7 +285,7 @@ class Article(WikiArticle):
         if re.match("#REDIRECT", text, re.IGNORECASE):
             self.log("Redirect")
             return []
-        
+
         for line in text.split("\n"):
             # Get title elements
             if line.startswith("=="):

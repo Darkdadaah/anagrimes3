@@ -4,7 +4,7 @@ import logging
 import re
 from re import Match
 from typing import Any, Dict, List, Tuple
-from typing_extensions import Self
+from typing import Self
 
 from wikt.data import word_types, word_attributes
 
@@ -200,15 +200,35 @@ class Word(WikiBase):
         return struct
 
 
+class Section:
+    """A wiki section."""
+    title: str
+    level: int
+    text: str
+    subsections: list[Self]
+
+    def __init__(self):
+        pass
+
+
 class WikiArticle(WikiBase):
     """General Wiki page split in wiki sections."""
+    text: str
 
-    section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")
-    empty_regex = re.compile(r"^\s*$")
+    _section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")
+    _empty_regex = re.compile(r"^\s*$")
+    _redirection = re.compile(r"^\s*#REDIRECT", re.IGNORECASE)
+    html_comment = re.compile("<!--.*?-->", flags=re.DOTALL)
+
+    def __init__(self, title: str, text: str):
+        super().__init__(title)
+
+        text = re.sub(self.html_comment, "", text)
+        self.text = text
 
     def parse_section_title(self, section_str: str) -> Tuple[int, str]:
         """Extract the level and content of the section title."""
-        sec_match = self.section_regex.search(section_str.strip())
+        sec_match = self._section_regex.search(section_str.strip())
         if not sec_match:
             self.log("Can't parse section", section_str)
             return (0, "")
@@ -228,19 +248,14 @@ class WikiArticle(WikiBase):
 
         return (sec_level, sec_title)
 
+    def is_redirect(self) -> bool:
+        """Check if a wiki text is a redirection."""
+        if re.findall(self._redirection, self.text):
+            return True
+        return False
+
     def get_sections(self) -> list[Section]:
         return []
-
-
-class Section:
-    """A wiki section."""
-    title: str
-    level: int
-    text: str
-    subsections: list[Self]
-
-    def __init__(self):
-        pass
 
 
 class Article(WikiArticle):
@@ -257,17 +272,16 @@ class Article(WikiArticle):
     ]
     temp_def_no_parentheses = temp_def_keep_with_par
     temp_def_no_capitalize = ["cf"]
-    html_comment = re.compile("<!--.*?-->", flags=re.DOTALL)
 
     def __init__(self, title: str, text: str) -> None:
-        super().__init__(title)
-        self.words: List[Word] = self.parse_words(title, text)
+        super().__init__(title, text)
+        self.words: List[Word] = self.parse_words()
 
     def __str__(self):
         lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
-    def parse_words(self, title: str, text: str) -> List[Word]:
+    def parse_words(self) -> List[Word]:
         """Parse a Wiktionnaire article into words."""
         words = []
 
@@ -275,18 +289,15 @@ class Article(WikiArticle):
         lang = ""
         cur_word = None
 
-        if not text:
+        if not self.text:
             self.log("No text")
             return []
 
-        # Remove html comments
-        text = re.sub(self.html_comment, "", text)
-
-        if re.match("#REDIRECT", text, re.IGNORECASE):
+        if self.is_redirect():
             self.log("Redirect")
             return []
 
-        for line in text.split("\n"):
+        for line in self.text.split("\n"):
             # Get title elements
             if line.startswith("=="):
                 (level, section_title) = self.parse_section_title(line)
@@ -370,8 +381,10 @@ class Article(WikiArticle):
                                 if " " in self.title:
                                     is_locution = True
 
+                                # TODO: check that is a word type
+
                                 cur_word = Word(
-                                    title,
+                                    self.title,
                                     lang,
                                     wtype,
                                     is_flexion=is_flexion,
@@ -379,7 +392,6 @@ class Article(WikiArticle):
                                     number=number,
                                 )
 
-                                # TODO: check that is a word type
                                 if wlang != lang:
                                     self.log(
                                         "Langue section parameter is different from word section section",
@@ -394,7 +406,7 @@ class Article(WikiArticle):
                     cur_word = None
 
             elif line.startswith("'''") and lang and cur_word:
-                form = Form(title, line)
+                form = Form(self.title, line)
                 cur_word.add_form(form)
 
             elif line.startswith("#") and lang and cur_word:

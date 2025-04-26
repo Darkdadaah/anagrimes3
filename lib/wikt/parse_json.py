@@ -37,7 +37,7 @@ def main():
     xml_file = args.input
     out_file = args.output
 
-    xml_ns = "{http://www.mediawiki.org/xml/export-0.10/}"
+    xml_ns = "{http://www.mediawiki.org/xml/export-0.11/}"
     ns = 0
 
     # Print to json file

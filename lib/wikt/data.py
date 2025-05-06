@@ -52,6 +52,7 @@ word_types = {
     "article partitif": "art-part",
     "art-part": "art-part",
     "article par": "art-part",
+    "déterminant possessif": "det-pos",
     "nom": "nom",
     "substantif": "nom",
     "nom commun": "nom",

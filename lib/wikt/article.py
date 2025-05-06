@@ -1,10 +1,10 @@
 """Main Wiktionnaire articles representation."""
 
+from __future__ import annotations
 import logging
 import re
 from re import Match
-from typing import Any, Dict, List, Tuple
-from typing import Self
+from typing import Any, Self
 
 from wikt.data import word_types, word_attributes
 
@@ -13,7 +13,7 @@ class Template:
     """Template representation."""
 
     def __init__(
-        self, title: str, params_list: None | List[str] = None, params_dict: None | Dict[str, str] = None
+        self, title: str, params_list: None | list[str] = None, params_dict: None | dict[str, str] = None
     ) -> None:
         self.title = title
 
@@ -87,14 +87,14 @@ class Form(WikiBase):
     def __init__(self, title: str, form_line: str) -> None:
         super().__init__(title)
         self.form = None
-        self.prons: List[str] = []
-        self.attributes: List[str] = []
+        self.prons: list[str] = []
+        self.attributes: list[str] = []
 
         self.parse_form_line(form_line)
 
     def parse_form_line(self, line: str) -> None:
         """Parse a form line in the form '''(WORD)''' (PROPERTIES in templates)"""
-        templates: Dict[str, List[Template]] = self.get_templates(line)
+        templates: dict[str, list[Template]] = self.get_templates(line)
 
         # Get pronunciations
         if "pron" in templates:
@@ -121,9 +121,9 @@ class Form(WikiBase):
         else:
             self.log("Attribute written twice", attr)
 
-    def get_templates(self, string: str) -> Dict[str, List[Template]]:
+    def get_templates(self, string: str) -> dict[str, list[Template]]:
         """Retrieve all templates from a wiki string."""
-        templates: Dict[str, List[Template]] = {}
+        templates: dict[str, list[Template]] = {}
 
         if string is None:
             return templates
@@ -156,7 +156,7 @@ class Word(WikiBase):
         self.lang = lang
         self.type = wtype
         self.form: Form = Form(title, "")
-        self.defs: List[str] = []
+        self.defs: list[str] = []
         self.is_flexion = is_flexion
         self.is_locution = is_locution
         self.number = number
@@ -179,7 +179,7 @@ class Word(WikiBase):
         ]
         return "\n\t".join(lines)
 
-    def struct(self) -> Dict[str, Any]:
+    def struct(self) -> dict[str, Any]:
         """Returns a json structure representing the word section."""
         struct = {
             "title": self.title,
@@ -226,7 +226,7 @@ class WikiArticle(WikiBase):
         text = re.sub(self.html_comment, "", text)
         self.text = text
 
-    def parse_section_title(self, section_str: str) -> Tuple[int, str]:
+    def parse_section_title(self, section_str: str) -> tuple[int, str]:
         """Extract the level and content of the section title."""
         sec_match = self._section_regex.search(section_str.strip())
         if not sec_match:
@@ -275,26 +275,27 @@ class Article(WikiArticle):
 
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title, text)
-        self.words: List[Word] = self.parse_words()
+        self.words: list[Word] = self.parse_words()
 
     def __str__(self):
         lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
-    def parse_words(self) -> List[Word]:
+    def parse_words(self) -> list[Word]:
         """Parse a Wiktionnaire article into words."""
         words = []
 
         # Parse language sections
         lang = ""
         cur_word = None
+        has_char_section = False
 
         if not self.text:
-            self.log("No text")
+            self.debug("No text")
             return []
 
         if self.is_redirect():
-            self.log("Redirect")
+            self.debug("Redirect")
             return []
 
         for line in self.text.split("\n"):
@@ -324,6 +325,7 @@ class Article(WikiArticle):
                     elif section.title == "caractère":
                         lang = ""
                         self.debug("Skip Caractere section", line)
+                        has_char_section = True
                     else:
                         lang = ""
                         self.log("Unrecognized level 2 section template", line)
@@ -418,7 +420,7 @@ class Article(WikiArticle):
         if cur_word:
             words.append(cur_word)
 
-        if len(words) == 0:
+        if not has_char_section and len(words) == 0:
             self.log("No word parsed")
         return words
 

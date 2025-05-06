@@ -64,7 +64,7 @@ class TemplateFactory:
 
 
 class WikiBase:
-    """A base Wiki object with an article title."""
+    """A base Wiki object with an article title, for easier logging."""
 
     def __init__(self, title: str) -> None:
         self.title = title
@@ -85,7 +85,7 @@ class Form(WikiBase):
     template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
     def __init__(self, title: str, form_line: str) -> None:
-        super().__init__(title)
+        super().__init__(f"{title}-form_line")
         self.form = None
         self.prons: list[str] = []
         self.attributes: list[str] = []
@@ -152,7 +152,7 @@ class Word(WikiBase):
         is_locution: bool = False,
         number: int = 0,
     ) -> None:
-        super().__init__(title)
+        super().__init__(f"{title}#{lang}-{wtype}-{number}")
         self.lang = lang
         self.type = wtype
         self.form: Form = Form(title, "")

@@ -202,13 +202,22 @@ class Word(WikiBase):
 
 class Section:
     """A wiki section."""
-    title: str
-    level: int
-    text: str
-    subsections: list[Self]
 
-    def __init__(self):
-        pass
+    def __init__(self, title: str, level: int):
+        self.title = title
+        self.level = level
+        self.text: list[str] = []
+        self.subsections: list[Self] = []
+    
+    def __str__(self) -> str:
+        sub_str = ",".join([str(sec) for sec in self.subsections])
+        return f"{self.title}({sub_str})"
+
+    def add_text(self, text: str) -> None:
+        self.text.append(text)
+
+    def add_subsection(self, sec: Self) -> None:
+        self.subsections.append(sec)
 
 
 class WikiArticle(WikiBase):
@@ -225,6 +234,7 @@ class WikiArticle(WikiBase):
 
         text = re.sub(self.html_comment, "", text)
         self.text = text
+        self._top_section: Section | None = None
 
     def parse_section_title(self, section_str: str) -> tuple[int, str]:
         """Extract the level and content of the section title."""
@@ -254,8 +264,40 @@ class WikiArticle(WikiBase):
             return True
         return False
 
-    def get_sections(self) -> list[Section]:
-        return []
+    def _parse_sec_title(self, text: str) -> str:
+        return text
+
+    def top_section(self) -> Section:
+        """Parse out hierarchy of sections from a wiki text."""
+        if self._top_section:
+            return self._top_section
+
+        self._top_section = Section("TOP", 0)
+        cur_section = self._top_section
+        cur_sec2: Section | None = None
+        cur_sec3: Section | None = None
+
+        for line in self.text.split("\n"):
+            # Get title elements
+            if line.startswith("=="):
+                (level, section_title) = self.parse_section_title(line)
+
+                # New level2
+                if level == 2:
+                    cur_sec2 = Section(section_title, level)
+                    self._top_section.add_subsection(cur_sec2)
+                    cur_section = cur_sec2
+                if level == 3:
+                    cur_sec3 = Section(section_title, level)
+                    if cur_sec2:
+                        cur_sec2.add_subsection(cur_sec3)
+                        cur_section = cur_sec3
+                    else:
+                        self.log(f"No section2 for {section_title}")
+            else:
+                cur_section.add_text("")
+
+        return self._top_section
 
 
 class Article(WikiArticle):
@@ -281,6 +323,7 @@ class Article(WikiArticle):
         lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
+
     def parse_words(self) -> list[Word]:
         """Parse a Wiktionnaire article into words."""
         words = []
@@ -297,6 +340,9 @@ class Article(WikiArticle):
         if self.is_redirect():
             self.debug("Redirect")
             return []
+
+        # top = self.top_section()
+        # print(top)
 
         for line in self.text.split("\n"):
             # Get title elements

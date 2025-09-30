@@ -9,58 +9,75 @@ from typing import Any, Self
 from wikt.data import word_types, word_attributes
 
 
+class WiktParserError(Exception):
+    """Raised when parsing the wiki code fails."""
+
+
 class Template:
-    """Template representation."""
+    """Generic Wiki Template representation.
+
+    Attributes:
+        title: Template name.
+        unnamed: An ordered list of unnamed parameters.
+        named: A dictionary of named parameters.
+    """
+
+    _template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
+    _template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
 
     def __init__(
-        self, title: str, params_list: None | list[str] = None, params_dict: None | dict[str, str] = None
+        self, title: str, unnamed: None | list[str] = None, named: None | dict[str, str] = None
     ) -> None:
         self.title = title
-
-        self.list_params = []
-        if params_list:
-            self.list_params = params_list
-
-        self.dict_params = {}
-        if params_dict:
-            self.dict_params = params_dict
-
-
-class TemplateFactory:
-    """Generate template/templates from a wiki string."""
-
-    template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
-    template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
+        self.unnamed = []
+        self.named = {}
+        if unnamed:
+            self.unnamed = unnamed
+        if named:
+            self.named = named
 
     @classmethod
-    def parse_template(cls, template_str: str) -> Template:
+    def from_string(cls, template_str: str) -> Template:
         """Parse a template string."""
         title = ""
-        params_dict = {}
-        params_list = []
+        named: dict[str, str] = {}
+        unnamed: list[str] = [""] * 20
 
-        if templ_match := cls.template_inside_regex.search(template_str):
+        ordered_index = 0
+        max_index = 0
+        if templ_match := cls._template_inside_regex.search(template_str):
             templ_content = templ_match.group(1)
             templ_parts = templ_content.split("|")
+            title = templ_parts.pop(0)  # First part = named of template
 
             for part in templ_parts:
-                if part_match := cls.template_parts_regex.search(part):
+                # key-value pair
+                if part_match := cls._template_parts_regex.search(part):
                     pkey = part_match.group(1)
                     pval = part_match.group(2)
-                    if pval:
-                        params_dict[pkey] = pval
-                else:
-                    pval = part.strip()
                     if not pval:
                         continue
-                    if not title:
-                        title = pval
-                        continue
-                    params_list.append(pval)
+                    if pkey.isdigit():
+                        try:
+                            pindex = int(pkey) - 1
+                            unnamed[pindex] = pval
+                            max_index = pindex
+                        except IndexError:
+                            print("WARNING: has too many arguments past max {MAX_UNAMED}. Ignoring more")
 
-        template = Template(title, params_list=params_list, params_dict=params_dict)
+                    named[pkey] = pval
+                else:
+                    pval = part.strip()
+                    unnamed[ordered_index] = pval
+                    ordered_index += 1
 
-        return template
+        # TODO: should throw if no title or parsing failed somehow
+
+        # Trim unnamed
+        last_index = max_index if max_index > ordered_index else ordered_index
+        unnamed = unnamed[0:last_index]
+
+        return Template(title, unnamed, named)
 
 
 class WikiBase:
@@ -101,8 +118,8 @@ class Form(WikiBase):
             prons = templates["pron"]
 
             for pron in prons:
-                if pron.list_params:
-                    pron_str = pron.list_params[0]
+                if pron.unnamed:
+                    pron_str = pron.unnamed[0]
                     self.add_pron(pron_str)
 
         # Get other attributes
@@ -131,7 +148,7 @@ class Form(WikiBase):
         template_strings = self.template_regex.findall(string)
 
         for temp_str in template_strings:
-            template = TemplateFactory.parse_template(temp_str)
+            template = Template.from_string(temp_str)
             if template.title in templates:
                 templates[template.title].append(template)
             else:
@@ -357,14 +374,14 @@ class Article(WikiArticle):
 
                 # Language section
                 if level == 2:
-                    section = TemplateFactory.parse_template(section_title)
+                    section = Template.from_string(section_title)
 
                     if not section:
                         self.log("Section 2 is not a template", line)
                         continue
 
                     if section.title == "langue":
-                        pars = section.list_params
+                        pars = section.unnamed
                         if pars:
                             lang = pars[0]
                         else:
@@ -378,7 +395,7 @@ class Article(WikiArticle):
                         lang = ""
                         self.log("Unrecognized level 2 section template", line)
                 elif lang and level == 3:
-                    section = TemplateFactory.parse_template(section_title)
+                    section = Template.from_string(section_title)
 
                     if not section:
                         self.log("Section 3 is not a template", line)
@@ -388,7 +405,7 @@ class Article(WikiArticle):
 
                     # Section template
                     if templ_name == "S":
-                        pars = section.list_params
+                        pars = section.unnamed
                         if pars:
                             sname = pars[0]
                             wlang = None
@@ -416,7 +433,7 @@ class Article(WikiArticle):
                                     cur_word = None
 
                                 # Number
-                                number = int(section.dict_params.get("num", 1))
+                                number = int(section.named.get("num", 1))
 
                                 # Check if flexion
                                 is_flexion = False
@@ -474,11 +491,11 @@ class Article(WikiArticle):
 
     def _template_def(self, match: Match) -> str:
         template_str = match.group(1)
-        template = TemplateFactory.parse_template(template_str)
+        template = Template.from_string(template_str)
         title = template.title
         par = ""
-        if len(template.list_params) > 0:
-            par = template.list_params[0]
+        if len(template.unnamed) > 0:
+            par = template.unnamed[0]
 
         temp_str = ""
         if title in self.temp_def_keep_with_par and par is not None:

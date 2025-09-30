@@ -1,5 +1,7 @@
 """Parse a Wiktionnaire xml dump into a jsonl format."""
 
+import logging
+
 import argparse
 from lxml import etree
 
@@ -10,8 +12,15 @@ def main():
     parser.add_argument("input", type=str, help="xml dump path")
     parser.add_argument("output", type=str, help="json output basename")
     parser.add_argument("batch", type=int, help="number of articles per batch file", default=10000)
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_const",
+        dest="loglevel",
+        const=logging.INFO,
+    )
     args = parser.parse_args()
-    # logging.basicConfig(level=args.loglevel)
+    logging.basicConfig(level=args.loglevel)
 
     xml_file = args.input
     output = args.output
@@ -28,10 +37,10 @@ def main():
         xml_head = bytes(line1, "utf-8")
     xml_foot = b"</mediawiki>"
 
-    # Print to json file
+    # Prep first batch file
     num_file = 0
     out_file = f"{output}_{num_file}.xml"
-    outf = open(out_file, "wb")
+    outf = open(out_file, "wb") # pylint: disable=consider-using-with
     outf.write(xml_head)
 
     num = 0
@@ -48,7 +57,7 @@ def main():
 
             num += 1
             if num % batch_size == 0:
-                print(f"{num} articles to {out_file}")
+                logging.info(f"{num} articles to {out_file}")
                 outf.write(xml_foot)
                 outf.close()
                 num_file += 1
@@ -66,8 +75,8 @@ def main():
     del context
     outf.write(xml_foot)
     outf.close()
-    print(f"{num} pages parsed")
-    print(f"{num} pages skipped")
+    logging.info(f"{num} pages parsed")
+    logging.info(f"{num} pages skipped")
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ def main():
     with open(xml_file) as inxml:
         line1 = inxml.readline()
         if not line1.startswith("<mediawiki"):
-            raise Exception("XML doesn't appears to be a Mediawiki dump.")
+            raise ValueError("XML is not a Mediawiki dump")
         xml_head = bytes(line1, "utf-8")
     xml_foot = b"</mediawiki>"
 
@@ -53,11 +53,12 @@ def main():
                 outf.close()
                 num_file += 1
                 out_file = f"{output}_{num_file}.xml"
-                outf = open(out_file, "wb")
+                outf = open(out_file, "wb") # pylint: disable=consider-using-with
                 outf.write(xml_head)
             outf.write(etree.tostring(elem))
             elem.clear()
 
+            # Clean up
             for ancestor in elem.xpath("ancestor-or-self::*"):
                 while ancestor.getprevious() is not None:
                     del ancestor.getparent()[0]

@@ -208,15 +208,17 @@ class Section:
         self.level = level
         self.text: list[str] = []
         self.subsections: list[Self] = []
-    
+
     def __str__(self) -> str:
         sub_str = ",".join([str(sec) for sec in self.subsections])
         return f"{self.title}({sub_str})"
 
     def add_text(self, text: str) -> None:
+        """Add a line of text to the section."""
         self.text.append(text)
 
     def add_subsection(self, sec: Self) -> None:
+        """Add a subsection to the section."""
         self.subsections.append(sec)
 
 

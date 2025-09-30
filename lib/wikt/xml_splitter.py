@@ -9,23 +9,6 @@ from lxml import etree
 DEFAULT_BATCH = 10000
 
 
-def main():
-    """main entrypoint"""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("input", type=str, help="xml dump path")
-    parser.add_argument("output", type=str, help="json output basename")
-    parser.add_argument("batch", type=int, help="number of articles per batch file", default=DEFAULT_BATCH)
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_const",
-        dest="loglevel",
-        const=logging.INFO,
-    )
-    args = parser.parse_args()
-    logging.basicConfig(level=args.loglevel)
-    split_xml(Path(args.input), Path(args.output),args.batch)
-
 def split_xml(xml_file: Path, output: Path, batch_size: int = DEFAULT_BATCH) -> None:
     """Split a Mediawiki xml dump into smaller files.
     """
@@ -87,6 +70,24 @@ def split_xml(xml_file: Path, output: Path, batch_size: int = DEFAULT_BATCH) -> 
 
     logging.info(f"{num_articles} pages parsed")
     logging.info(f"{num_articles} pages skipped")
+
+
+def main():
+    """main entrypoint"""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("input", type=str, help="xml dump path")
+    parser.add_argument("output", type=str, help="json output basename")
+    parser.add_argument("batch", type=int, help="number of articles per batch file", default=DEFAULT_BATCH)
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_const",
+        dest="loglevel",
+        const=logging.INFO,
+    )
+    args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel)
+    split_xml(Path(args.input), Path(args.output),args.batch)
 
 
 if __name__ == "__main__":

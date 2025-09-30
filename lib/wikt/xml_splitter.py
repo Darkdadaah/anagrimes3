@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from typing import Generator
 
 import argparse
 from lxml import etree
@@ -9,12 +10,34 @@ from lxml import etree
 DEFAULT_BATCH = 10000
 
 
-def split_xml(xml_file: Path, output: Path, batch_size: int = DEFAULT_BATCH) -> None:
-    """Split a Mediawiki xml dump into smaller files.
-    """
+def get_pages(xml_file: Path)-> Generator[etree.Element, None, None]:
+    """Generator for mediawiki pages given an XML dump."""
     # Define Namespace to keep: only main articles
     xml_ns = "{http://www.mediawiki.org/xml/export-0.11/}"
     ns = 0
+
+    # Parse XML
+    context = etree.iterparse(xml_file, events=("start", "end"))
+    for event, elem in context:
+        _, _, tag = elem.tag.rpartition("}")
+
+        if tag == "page" and event == "end":
+            page_ns = int(elem.find(f"{xml_ns}ns").text)
+            if page_ns != ns:
+                continue
+            yield elem
+
+            # Clean up
+            for ancestor in elem.xpath("ancestor-or-self::*"):
+                while ancestor.getprevious() is not None:
+                    del ancestor.getparent()[0]
+            elem.clear()
+    del context
+
+
+def split_xml(xml_file: Path, output: Path, batch_size: int = DEFAULT_BATCH) -> None:
+    """Split a Mediawiki xml dump into smaller files.
+    """
 
     # Get mediawiki header
     with open(xml_file) as inxml:
@@ -32,19 +55,9 @@ def split_xml(xml_file: Path, output: Path, batch_size: int = DEFAULT_BATCH) -> 
 
     # Keep some stats
     num_articles = 0
-    num_skipped = 0
 
     # Parse XML
-    context = etree.iterparse(xml_file, events=("start", "end"))
-    for event, elem in context:
-        _, _, tag = elem.tag.rpartition("}")
-
-        if tag == "page" and event == "end":
-            page_ns = int(elem.find(f"{xml_ns}ns").text)
-            if page_ns != ns:
-                num_skipped += 1
-                continue
-
+    for elem in get_pages(xml_file):
             num_articles += 1
             if num_articles % batch_size == 0:
                 # Close current file
@@ -58,18 +71,10 @@ def split_xml(xml_file: Path, output: Path, batch_size: int = DEFAULT_BATCH) -> 
                 outf = open(out_file, "wb") # pylint: disable=consider-using-with
                 outf.write(xml_head)
             outf.write(etree.tostring(elem))
-            elem.clear()
-
-            # Clean up
-            for ancestor in elem.xpath("ancestor-or-self::*"):
-                while ancestor.getprevious() is not None:
-                    del ancestor.getparent()[0]
     outf.write(xml_foot)
     outf.close()
-    del context
 
     logging.info(f"{num_articles} pages parsed")
-    logging.info(f"{num_articles} pages skipped")
 
 
 def main():

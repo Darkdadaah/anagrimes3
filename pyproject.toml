@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 wikt_parse = "wikt.parse_json:main"
+wikt_split = "wikt.xml_splitter:main"
 
 [tool.setuptools]
 package-dir = {"" = "lib"}

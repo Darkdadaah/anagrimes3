@@ -9,6 +9,9 @@ from typing import Any, Self
 from wikt.data import word_types, word_attributes
 
 
+MAX_UNAMED = 50
+
+
 class WiktParserError(Exception):
     """Raised when parsing the wiki code fails."""
 
@@ -41,7 +44,7 @@ class Template:
         """Parse a template string."""
         title = ""
         named: dict[str, str] = {}
-        unnamed: list[str] = [""] * 20
+        unnamed: list[str] = [""] * MAX_UNAMED
 
         ordered_index = 0
         max_index = 0

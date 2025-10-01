@@ -36,6 +36,9 @@ class Template:
         if named:
             self.named = named
 
+    def __repr__(self):
+        return "{{ " + f"{self.title} | {self.unnamed} || {self.named} " + "}}"
+
     @classmethod
     def from_string(cls, template_str: str) -> Template:
         """Parse a template string."""
@@ -64,8 +67,8 @@ class Template:
                             max_index = pindex
                         except IndexError:
                             print("WARNING: Template too many arguments past max {MAX_UNAMED}. Ignoring more")
-
-                    named[pkey] = pval
+                    else:
+                        named[pkey] = pval
                 else:
                     pval = part.strip()
                     unnamed[ordered_index] = pval

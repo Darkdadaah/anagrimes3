@@ -72,14 +72,25 @@ class Article(WiktArticle):
                 if level == 2:
                     lang = section_title.strip()
 
+            # {{head|}} Is the true sign that this is a word section
             elif line.startswith("{{head|") and lang:
-                section_title = section_title.strip().lower()
+                head = Template.from_string(line)
 
-                # {{head|}} Is the true sign that this is a word section
-                if section_title not in word_types:
-                    self.log(f"Section 3 is not a known word type: '{section_title}'", line)
-                    continue
-                wtype = word_types[section_title]
+                wlang = ""
+                wtype = ""
+                if head.title == "head":
+                    try:
+                        wlang = head.unnamed[0]
+                        wtype = head.unnamed[1]
+                    except IndexError as e:
+                        raise RuntimeError(f"Format error: {line} -> {head}") from e
+
+                wtype = wtype.replace(" form", "").strip().lower()
+                try:
+                    wtype = word_types[wtype]
+                except KeyError:
+                    self.log(f"Section 3 of {self.title} is not a known word type: '{wtype}'", line)
+                self.debug(f"Found Word section: {wlang}-{wtype}")
 
                 # Store any previous word we were scanning for
                 if cur_word:
@@ -97,7 +108,7 @@ class Article(WiktArticle):
 
                 cur_word = WiktWord(
                     self.title,
-                    lang,
+                    wlang,
                     wtype,
                     is_locution=is_locution,
                     number=number,

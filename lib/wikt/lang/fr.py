@@ -1,17 +1,17 @@
-"""Main Wiktionnaire articles representation."""
+"""French Wiktionary parser."""
 
 from __future__ import annotations
 # import logging
 import re
 from re import Match
-from typing import Any
 
 from wikt.data import word_types, word_attributes
-from wikt.wiki import Template, WikiBase, WikiArticle
+from wikt.wiki import Template
+from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
-__all__ = ['Article', 'Word']
+__all__ = ['Article']
 
-class Form(WikiBase):
+class Form(WiktForm):
     """Word form line parsing."""
 
     form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
@@ -19,10 +19,6 @@ class Form(WikiBase):
 
     def __init__(self, title: str, form_line: str) -> None:
         super().__init__(f"{title}-form_line")
-        self.form = None
-        self.prons: list[str] = []
-        self.attributes: list[str] = []
-
         self.parse_form_line(form_line)
 
     def parse_form_line(self, line: str) -> None:
@@ -73,67 +69,7 @@ class Form(WikiBase):
         return templates
 
 
-class Word(WikiBase):
-    """A Wiktionnaire word section representation."""
-
-    def __init__(
-        self,
-        title: str,
-        lang: str,
-        wtype: str,
-        is_flexion: bool = False,
-        is_locution: bool = False,
-        number: int = 0,
-    ) -> None:
-        super().__init__(f"{title}#{lang}-{wtype}-{number}")
-        self.lang = lang
-        self.type = wtype
-        self.form: Form = Form(title, "")
-        self.defs: list[str] = []
-        self.is_flexion = is_flexion
-        self.is_locution = is_locution
-        self.number = number
-
-    def add_def(self, def_line: str) -> None:
-        """Add a definition from a definition line."""
-        self.defs.append(def_line)
-
-    def add_form(self, form: Form) -> None:
-        """Add a form from a form line."""
-        self.form = form
-
-    def __str__(self) -> str:
-        lines = [
-            f"TITLE = {self.title}",
-            f"LANG  = {self.lang}",
-            f"TYPE  = {self.type}",
-            f"PRONS = {self.form.prons}",
-            f"DEFS  = {len(self.defs)}",
-        ]
-        return "\n\t".join(lines)
-
-    def struct(self) -> dict[str, Any]:
-        """Returns a json structure representing the word section."""
-        struct = {
-            "title": self.title,
-            "lang": self.lang,
-            "type": self.type,
-            "defs": self.defs,
-            "is_flexion": self.is_flexion,
-            "is_locution": self.is_locution,
-            "number": self.number,
-        }
-
-        # Add form properties
-        if self.form:
-            if self.form.prons:
-                struct["prons"] = self.form.prons
-            if self.form.attributes:
-                struct["attributes"] = self.form.attributes
-        return struct
-
-
-class Article(WikiArticle):
+class Article(WiktArticle):
     """A Wiktionnaire article."""
 
     def_regex = re.compile("^#+([^#*:] *.+)$")
@@ -150,14 +86,14 @@ class Article(WikiArticle):
 
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title, text)
-        self.words: list[Word] = self.parse_words()
+        self.words: list[WiktWord] = self.parse_words()
 
     def __str__(self):
         lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
         return "\n".join(lines)
 
 
-    def parse_words(self) -> list[Word]:
+    def parse_words(self) -> list[WiktWord]:
         """Parse a Wiktionnaire article into words."""
         words = []
 
@@ -264,7 +200,7 @@ class Article(WikiArticle):
 
                                 # TODO: check that is a word type
 
-                                cur_word = Word(
+                                cur_word = WiktWord(
                                     self.title,
                                     lang,
                                     wtype,

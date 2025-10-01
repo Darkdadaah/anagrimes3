@@ -73,8 +73,15 @@ class Article(WiktArticle):
                     lang = section_title.strip()
 
             # {{head|}} Is the true sign that this is a word section
-            elif line.startswith("{{head|") and lang:
-                head = Template.from_string(line)
+            elif line.startswith("{{head|") or re.search(r"^\{\{.{2,3}-(noun|adj|prop|proper noun|prep|head)[\|\}]", line) and lang:
+                # Keep only the first template
+                line_temps = line.split("}} ")
+                if len(line_temps) > 1:
+                    line_temp = line_temps[0] + "}}"
+                else:
+                    line_temp = line
+
+                head = Template.from_string(line_temp)
 
                 wlang = ""
                 wtype = ""
@@ -82,14 +89,31 @@ class Article(WiktArticle):
                     try:
                         wlang = head.unnamed[0]
                         wtype = head.unnamed[1]
-                    except IndexError as e:
-                        raise RuntimeError(f"Format error: {line} -> {head}") from e
+                    except IndexError:
+                        self.log(f"Format error: {line} -> {head}")
+                    wtype = wtype.replace(" form", "")
+                else:
+                    # Lang-type template
+                    m = re.search(r"(.{2,3})-(noun|adj|prop|adv}prep)", head.title)
+                    if m:
+                        wlang = m.group(1)
+                        wtype = m.group(2)
+                    # Lang-head template
+                    else:
+                        m = re.search(r"(.{2,3})-head", head.title)
+                        if m:
+                            wlang = m.group(1)
+                            wtype = head.unnamed[0]
 
-                wtype = wtype.replace(" form", "").strip().lower()
+                # Last try to get the Word type
+                if not wtype:
+                    wtype = section_title.strip().lower()
+                    self.debug(f"Using section title for Word type: {wtype}")
+
                 try:
                     wtype = word_types[wtype]
                 except KeyError:
-                    self.log(f"Section 3 of {self.title} is not a known word type: '{wtype}'", line)
+                    self.log(f"Unknown word type: '{wlang}-{wtype}'", line)
                 self.debug(f"Found Word section: {wlang}-{wtype}")
 
                 # Store any previous word we were scanning for

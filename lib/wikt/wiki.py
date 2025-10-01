@@ -78,7 +78,7 @@ class Template:
 
         # Trim unnamed
         last_index = max_index if max_index > ordered_index else ordered_index
-        unnamed = unnamed[0:last_index]
+        unnamed = unnamed[0:last_index + 1]
 
         return Template(title, unnamed, named)
 

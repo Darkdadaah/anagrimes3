@@ -1,19 +1,20 @@
 """Parse a Wiktionnaire xml dump into a jsonl format."""
 
 import json
+import importlib
 import logging
 
 import argparse
 from lxml import etree
 
-from .article import Article
-
+wikt_languages = set(("fr",))
 
 def main():
     """main entrypoint"""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=str, help="xml dump path")
     parser.add_argument("output", type=str, help="json output path")
+    parser.add_argument("lang", type=str, help="Wiktionary language code", default="fr")
     parser.add_argument(
         "-v",
         "--verbose",
@@ -35,6 +36,12 @@ def main():
 
     xml_file = args.input
     out_file = args.output
+    lang = args.lang
+
+    if lang in wikt_languages:
+        wiktionary = importlib.import_module(f"wikt.lang.{lang}")
+    else:
+        raise RuntimeError(f"Language code {lang} is not supported")
 
     xml_ns = "{http://www.mediawiki.org/xml/export-0.11/}"
     ns = 0
@@ -62,7 +69,7 @@ def main():
                 num += 1
                 if num % 1000 == 0:
                     print(f"{num} articles")
-                article = Article(title, text)
+                article = wiktionary.Article(title, text)
 
                 for word in article.words:
                     outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")

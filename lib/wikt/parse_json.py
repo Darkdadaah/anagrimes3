@@ -7,7 +7,7 @@ import logging
 import argparse
 from lxml import etree
 
-wikt_languages = set(("fr",))
+wikt_languages = set(("fr","en"))
 
 def main():
     """main entrypoint"""

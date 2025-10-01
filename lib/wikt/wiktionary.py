@@ -12,7 +12,6 @@ __all__ = ['WiktForm', 'WiktArticle', 'WiktWord']
 class WiktForm(WikiBase):
     """Word form line parsing."""
 
-    form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
     template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
     def __init__(self, title: str) -> None:

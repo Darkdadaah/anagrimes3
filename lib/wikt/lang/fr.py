@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from re import Match
 
-from wikt.data import word_types, word_attributes
+from wikt.data.en import word_types, word_attributes
 from wikt.wiki import Template
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
@@ -13,9 +13,6 @@ __all__ = ['Article']
 
 class Form(WiktForm):
     """Word form line parsing."""
-
-    form_regex = re.compile(r"^'''(.+?)''' ?(.+)? *$")
-    template_regex = re.compile(r"(\{\{[^\}]+?\}\})")
 
     def __init__(self, title: str, form_line: str) -> None:
         super().__init__(f"{title}-form_line")
@@ -39,35 +36,6 @@ class Form(WiktForm):
             if attr in templates:
                 self.add_attribute(full_attr_name)
 
-    def add_pron(self, pron_str: str) -> None:
-        """Add a pronunciation for that word."""
-        self.prons.append(pron_str)
-
-    def add_attribute(self, attr: str) -> None:
-        """Add an attribute for that word."""
-        if attr not in self.attributes:
-            self.attributes.append(attr)
-        else:
-            self.log("Attribute written twice", attr)
-
-    def get_templates(self, string: str) -> dict[str, list[Template]]:
-        """Retrieve all templates from a wiki string."""
-        templates: dict[str, list[Template]] = {}
-
-        if string is None:
-            return templates
-
-        template_strings = self.template_regex.findall(string)
-
-        for temp_str in template_strings:
-            template = Template.from_string(temp_str)
-            if template.title in templates:
-                templates[template.title].append(template)
-            else:
-                templates[template.title] = [template]
-
-        return templates
-
 
 class Article(WiktArticle):
     """A Wiktionnaire article."""
@@ -87,11 +55,6 @@ class Article(WiktArticle):
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title, text)
         self.words: list[WiktWord] = self.parse_words()
-
-    def __str__(self):
-        lines = [f"TITLE = {self.title}", f"WORDS = {len(self.words)}"]
-        return "\n".join(lines)
-
 
     def parse_words(self) -> list[WiktWord]:
         """Parse a Wiktionnaire article into words."""

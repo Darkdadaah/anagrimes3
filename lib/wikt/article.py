@@ -66,7 +66,7 @@ class Template:
                             unnamed[pindex] = pval
                             max_index = pindex
                         except IndexError:
-                            print("WARNING: has too many arguments past max {MAX_UNAMED}. Ignoring more")
+                            print("WARNING: Template too many arguments past max {MAX_UNAMED}. Ignoring more")
 
                     named[pkey] = pval
                 else:
@@ -499,8 +499,8 @@ class Article(WikiArticle):
         par = ""
         if len(template.unnamed) > 0:
             par = template.unnamed[0]
-
         temp_str = ""
+
         if title in self.temp_def_keep_with_par and par is not None:
             temp_str = title + " " + par
 

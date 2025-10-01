@@ -94,7 +94,7 @@ class Article(WiktArticle):
                     wtype = wtype.replace(" form", "")
                 else:
                     # Lang-type template
-                    m = re.search(r"(.{2,3})-(noun|adj|prop|adv}prep)", head.title)
+                    m = re.search(r"(.{2,3})-(noun|adj|prop|proper noun|adv|prep)", head.title)
                     if m:
                         wlang = m.group(1)
                         wtype = m.group(2)

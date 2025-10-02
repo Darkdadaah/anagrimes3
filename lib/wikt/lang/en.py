@@ -72,8 +72,12 @@ class Article(WiktArticle):
                 if level == 2:
                     lang = section_title.strip()
 
+            # Don't bother parsing without lang section
+            if not lang:
+                continue
+
             # {{head|}} Is the true sign that this is a word section
-            elif line.startswith("{{head|") or re.search(r"^\{\{.{2,3}-(noun|adj|prop|proper noun|prep|head)[\|\}]", line) and lang:
+            if line.startswith("{{head|") or re.search(r"^\{\{.{2,3}-(noun|adj|prop|proper noun|prep|head)[\|\}]", line):
                 # Keep only the first template
                 line_temps = line.split("}} ")
                 if len(line_temps) > 1:
@@ -140,7 +144,7 @@ class Article(WiktArticle):
                 form = Form(self.title, line)
                 cur_word.add_form(form)
 
-            elif line.startswith("#") and lang and cur_word:
+            elif line.startswith("#") and cur_word:
                 if def_match := self.def_regex.search(line):
                     def_line = def_match.group(1)
                     def_line = self.clean_def(def_line)

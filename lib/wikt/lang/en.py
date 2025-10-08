@@ -98,23 +98,22 @@ class Article(WiktArticle):
                 except IndexError as e:
                     raise WikiParserError(f"Invalid headword template: {line}") from e
 
-
             # {{lang-part_of_speech}} (assumed)
             if not headword_lang and not headword_type and line.startswith("{{"):
                 if re.search(r"^\{\{.{2,3}-([^\|\}]+)[\|\}]", line):
                     head = Template.list_templates(line)[0]
+                    self.debug(f"Check matching {head}")
 
                     # Lang-type template
-                    m = re.search(r"(.{2,3})-(noun|adj|prop|proper noun|adv|prep)", head.title)
+                    m = re.search(r"^(.{2,3})-([^-]+?)$", head.title)
                     if m:
                         headword_lang = m.group(1)
-                        headword_type = m.group(2)
-                    # Lang-head template
-                    else:
-                        m = re.search(r"(.{2,3})-head", head.title)
-                        if m:
-                            headword_lang = m.group(1)
+                        part2 = m.group(2)
+                        if part2 == "head":
                             headword_type = head.unnamed[0]
+                        elif part2 in word_types:
+                            headword_type = part2
+                        # By this point we can't know if this is a POS
 
             # Whatever method we used, we found a headword line!
             if headword_lang and headword_type:
@@ -132,10 +131,17 @@ class Article(WiktArticle):
                     wtype = m.group(1)
                     is_flexion = True
 
-                try:
-                    wtype = word_types[wtype]
-                except KeyError:
-                    self.log(f"Unknown word type: '{wlang}-{wtype}'", line)
+                if wtype not in word_types:
+                    if wtype.endswith("f"):
+                        wtype = wtype[:-1]
+                        if wtype in word_types:
+                            self.debug(f"Found 'wordf' form: {wtype} in {head}")
+                            is_flexion = True
+                        else:
+                            self.log(f"Unknown word type: {wtype}")
+                    else:
+                        self.log(f"Unknown word type: {wtype}")
+
                 self.debug(f"Found Word section: {wlang}-{wtype}")
 
                 # Store any previous word we were scanning for

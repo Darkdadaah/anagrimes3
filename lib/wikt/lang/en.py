@@ -111,8 +111,11 @@ class Article(WiktArticle):
                         wlang = m.group(1)
                         part2 = m.group(2)
                         if part2 == "head":
-                            headword_lang = wlang
-                            headword_type = head.unnamed[0]
+                            if not head.unnamed:
+                                self.log(f"Head template without type param: {line}")
+                            else:
+                                headword_lang = wlang
+                                headword_type = head.unnamed[0]
                         elif part2 in word_types:
                             headword_lang = wlang
                             headword_type = part2

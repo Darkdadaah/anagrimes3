@@ -6,7 +6,7 @@ import re
 from re import Match
 
 from wikt.data.en import word_types, word_attributes
-from wikt.wiki import Template
+from wikt.wiki import Template, WikiParserError
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
 __all__ = ['Article']
@@ -59,6 +59,9 @@ class Article(WiktArticle):
         # top = self.top_section()
         # print(top)
 
+        headword_lang = ""
+        headword_type = ""
+
         for line in self.text.split("\n"):
             # Get title elements
             if line.startswith("=="):
@@ -76,43 +79,58 @@ class Article(WiktArticle):
             if not lang:
                 continue
 
-            # {{head|}} Is the true sign that this is a word section
-            if line.startswith("{{head|") or re.search(r"^\{\{.{2,3}-(noun|adj|prop|proper noun|prep|head)[\|\}]", line):
-                # Keep only the first template
-                line_temps = line.split("}} ")
-                if len(line_temps) > 1:
-                    line_temp = line_temps[0] + "}}"
-                else:
-                    line_temp = line
+            # In en.wiktionary headword lines are the best way to find word sections
+            # See https://en.wiktionary.org/wiki/Wiktionary:Entry_layout#Headword_line
+            # Two cases, both on one line (may be followed by other templates):
+            # 1) General template {{head|lang|part of speech}}
+            # 2) Language specific templates {{lang-part_of_speech}}
+            # Both may have additional parameters like genre
+            # 2 is harder to parse given that we have to guess with the context and the format
 
-                head = Template.from_string(line_temp)
+            # {{head|lang|part of speech}}
+            if line.startswith("{{head|"):
+                head = Template.list_templates(line)[0]
+                if not head.title == "head":
+                    raise WikiParserError(f"Should be a headword line in {head}: {line}")
+                try:
+                    headword_lang = head.unnamed[0]
+                    headword_type = head.unnamed[1]
+                except IndexError as e:
+                    raise WikiParserError(f"Invalid headword template: {line}") from e
 
-                wlang = ""
-                wtype = ""
-                if head.title == "head":
-                    try:
-                        wlang = head.unnamed[0]
-                        wtype = head.unnamed[1]
-                    except IndexError:
-                        self.log(f"Format error: {line} -> {head}")
-                    wtype = wtype.replace(" form", "")
-                else:
+
+            # {{lang-part_of_speech}} (assumed)
+            if not headword_lang and not headword_type and line.startswith("{{"):
+                if re.search(r"^\{\{.{2,3}-([^\|\}]+)[\|\}]", line):
+                    head = Template.list_templates(line)[0]
+
                     # Lang-type template
                     m = re.search(r"(.{2,3})-(noun|adj|prop|proper noun|adv|prep)", head.title)
                     if m:
-                        wlang = m.group(1)
-                        wtype = m.group(2)
+                        headword_lang = m.group(1)
+                        headword_type = m.group(2)
                     # Lang-head template
                     else:
                         m = re.search(r"(.{2,3})-head", head.title)
                         if m:
-                            wlang = m.group(1)
-                            wtype = head.unnamed[0]
+                            headword_lang = m.group(1)
+                            headword_type = head.unnamed[0]
 
-                # Last try to get the Word type
-                if not wtype:
-                    wtype = section_title.strip().lower()
-                    self.debug(f"Using section title for Word type: {wtype}")
+            # Whatever method we used, we found a headword line!
+            if headword_lang and headword_type:
+                wtype = headword_type
+                wlang = headword_lang
+
+                # Only do this once
+                headword_type = ""
+                headword_lang = ""
+
+                # TODO: Check if "form" before checking the type
+                is_flexion = False
+                m = re.search(r"^(.+) form$", wtype)
+                if m:
+                    wtype = m.group(1)
+                    is_flexion = True
 
                 try:
                     wtype = word_types[wtype]
@@ -139,10 +157,17 @@ class Article(WiktArticle):
                     wlang,
                     wtype,
                     is_locution=is_locution,
+                    is_flexion=is_flexion,
                     number=number,
                 )
                 form = Form(self.title, line)
                 cur_word.add_form(form)
+
+                # Last try to get the Word type
+                if not wtype:
+                    wtype = section_title.strip().lower()
+                    self.debug(f"Using section title for Word type: {wtype}")
+
 
             elif line.startswith("#") and cur_word:
                 if def_match := self.def_regex.search(line):

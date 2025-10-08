@@ -82,6 +82,21 @@ class Template:
 
         return Template(title, unnamed, named)
 
+    @classmethod
+    def list_templates(cls, line_str: str) -> list[Template]:
+        """Returns a list of templates in a line.
+            This assumes there are no nested templates.
+        """
+        line_str = line_str.strip()
+        templates = []
+        for temp_str in line_str.split(r"}}"):
+            if not temp_str.endswith(r"}}"):
+                temp_str = temp_str + "}}"
+            temp = Template.from_string(temp_str)
+            if temp.title:
+                templates.append(temp)
+
+        return templates
 
 class WikiBase:
     """A base Wiki object with an article title, for easier logging."""

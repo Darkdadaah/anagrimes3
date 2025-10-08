@@ -74,6 +74,7 @@ class Article(WiktArticle):
                 # Language section
                 if level == 2:
                     lang = section_title.strip()
+                    self.debug(f"Got language section {lang}")
 
             # Don't bother parsing without lang section
             if not lang:
@@ -107,11 +108,13 @@ class Article(WiktArticle):
                     # Lang-type template
                     m = re.search(r"^(.{2,3})-([^-]+?)$", head.title)
                     if m:
-                        headword_lang = m.group(1)
+                        wlang = m.group(1)
                         part2 = m.group(2)
                         if part2 == "head":
+                            headword_lang = wlang
                             headword_type = head.unnamed[0]
                         elif part2 in word_types:
+                            headword_lang = wlang
                             headword_type = part2
                         # By this point we can't know if this is a POS
 

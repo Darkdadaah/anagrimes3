@@ -132,7 +132,7 @@ class Article(WiktArticle):
 
                 # TODO: Check if "form" before checking the type
                 is_flexion = False
-                m = re.search(r"^(.+) form$", wtype)
+                m = re.search(r"^(.+) forms?$", wtype)
                 if m:
                     wtype = m.group(1)
                     is_flexion = True

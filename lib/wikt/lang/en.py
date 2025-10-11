@@ -137,6 +137,12 @@ class Article(WiktArticle):
                     wtype = m.group(1)
                     is_flexion = True
 
+                is_mutation = False
+                m = re.search(r"^mutated (.+)$", wtype)
+                if m:
+                    wtype = m.group(1)
+                    is_mutation = True
+
                 if wtype not in word_types:
                     if wtype.endswith("f"):
                         wtype = wtype[:-1]
@@ -144,9 +150,9 @@ class Article(WiktArticle):
                             self.debug(f"Found 'wordf' form: {wtype} in {head}")
                             is_flexion = True
                         else:
-                            self.log(f"Unknown word type: {wtype}")
+                            self.log(f"Unknown word type in {lang}: {wtype} ({head})")
                     else:
-                        self.log(f"Unknown word type: {wtype}")
+                        self.log(f"Unknown word type in {lang}: {wtype} ({head})")
 
                 self.debug(f"Found Word section: {wlang}-{wtype}")
 
@@ -170,6 +176,7 @@ class Article(WiktArticle):
                     wtype,
                     is_locution=is_locution,
                     is_flexion=is_flexion,
+                    is_mutation=is_mutation,
                     number=number,
                 )
                 form = Form(self.title, line)

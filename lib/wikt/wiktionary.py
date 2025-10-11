@@ -60,6 +60,7 @@ class WiktWord(WikiBase):
         wtype: str,
         is_flexion: bool = False,
         is_locution: bool = False,
+        is_mutation: bool = False,
         number: int = 0,
     ) -> None:
         super().__init__(f"{title}#{lang}-{wtype}-{number}")
@@ -69,6 +70,7 @@ class WiktWord(WikiBase):
         self.defs: list[str] = []
         self.is_flexion = is_flexion
         self.is_locution = is_locution
+        self.is_mutation = is_mutation
         self.number = number
 
     def add_def(self, def_line: str) -> None:
@@ -98,6 +100,7 @@ class WiktWord(WikiBase):
             "defs": self.defs,
             "is_flexion": self.is_flexion,
             "is_locution": self.is_locution,
+            "is_mutation": self.is_mutation,
             "number": self.number,
         }
 

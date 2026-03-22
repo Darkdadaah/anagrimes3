@@ -1,13 +1,15 @@
 """Generic Wiktionary objects, independent of language."""
 
 from __future__ import annotations
+
 # import logging
 import re
 from typing import Any
 
 from wikt.wiki import Template, WikiBase, WikiArticle
 
-__all__ = ['WiktForm', 'WiktArticle', 'WiktWord']
+__all__ = ["WiktForm", "WiktArticle", "WiktWord"]
+
 
 class WiktForm(WikiBase):
     """Word form line parsing."""

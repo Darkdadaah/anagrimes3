@@ -1,6 +1,7 @@
 """French Wiktionary parser."""
 
 from __future__ import annotations
+
 # import logging
 import re
 from re import Match
@@ -9,7 +10,8 @@ from wikt.data.fr import word_types, word_attributes
 from wikt.wiki import Template
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
-__all__ = ['Article']
+__all__ = ["Article"]
+
 
 class Form(WiktForm):
     """Word form line parsing."""

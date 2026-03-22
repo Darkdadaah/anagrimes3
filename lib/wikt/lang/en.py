@@ -1,6 +1,7 @@
 """English Wiktionary parser."""
 
 from __future__ import annotations
+
 # import logging
 import re
 from re import Match
@@ -9,7 +10,8 @@ from wikt.data.en import word_types, word_attributes
 from wikt.wiki import Template, WikiParserError
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
-__all__ = ['Article']
+__all__ = ["Article"]
+
 
 class Form(WiktForm):
     """Word form line parsing."""
@@ -188,7 +190,6 @@ class Article(WiktArticle):
                 if not wtype:
                     wtype = section_title.strip().lower()
                     self.debug(f"Using section title for Word type: {wtype}")
-
 
             elif line.startswith("#") and cur_word:
                 if def_match := self.def_regex.search(line):

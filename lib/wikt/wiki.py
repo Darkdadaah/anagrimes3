@@ -78,7 +78,7 @@ class Template:
 
         # Trim unnamed
         last_index = max_index if max_index > ordered_index else ordered_index
-        unnamed = unnamed[0:last_index + 1]
+        unnamed = unnamed[0 : last_index + 1]
         if len(unnamed) == 1 and unnamed[0] == "":
             unnamed = []
 
@@ -87,7 +87,7 @@ class Template:
     @classmethod
     def list_templates(cls, line_str: str) -> list[Template]:
         """Returns a list of templates in a line.
-            This assumes there are no nested templates.
+        This assumes there are no nested templates.
         """
         line_str = line_str.strip()
         templates = []
@@ -99,6 +99,7 @@ class Template:
                 templates.append(temp)
 
         return templates
+
 
 class WikiBase:
     """A base Wiki object with an article title, for easier logging."""
@@ -139,6 +140,7 @@ class Section:
 
 class WikiArticle(WikiBase):
     """General Wiki page split in wiki sections."""
+
     text: str
 
     _section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")

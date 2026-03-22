@@ -9,6 +9,8 @@ from lxml import etree
 # Only return pages from the Main namespace by default
 _ALLOWED_NS = (0,)
 _XML_NS = "{http://www.mediawiki.org/xml/export-0.11/}ns"
+
+
 def get_pages(xml_file: Path, allowed_ns: tuple[int] = _ALLOWED_NS) -> Generator[etree.Element, None, None]:
     """Generator for mediawiki XML pages from an XML dump.
 

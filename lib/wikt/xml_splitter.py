@@ -45,8 +45,7 @@ def batch_file_writer(xml_file: Path, output_dir: Path, file_name: str) -> Gener
 
 
 def split_xml(xml_file: Path, output_dir: Path, file_name: str, batch_size: int = DEFAULT_BATCH) -> None:
-    """Split a Mediawiki xml dump into smaller files.
-    """
+    """Split a Mediawiki xml dump into smaller files."""
 
     num_articles = 0
     files_gen = batch_file_writer(xml_file, output_dir, file_name)
@@ -67,7 +66,12 @@ def main():
     parser.add_argument("input", type=str, help="xml dump path")
     parser.add_argument("output_dir", type=Path, help="output directory for the files generated")
     parser.add_argument("file_name", type=str, help="name of the files generated")
-    parser.add_argument("batch", type=int, help=f"number of articles per batch file (default: {DEFAULT_BATCH})", default=DEFAULT_BATCH)
+    parser.add_argument(
+        "batch",
+        type=int,
+        help=f"number of articles per batch file (default: {DEFAULT_BATCH})",
+        default=DEFAULT_BATCH,
+    )
     parser.add_argument(
         "-v",
         "--verbose",

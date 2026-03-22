@@ -3,10 +3,11 @@
 
 import os
 import json
+
 from wikt.lang.fr import Article
 
 
-def test_article():
+def test_article(tmp_path):
     """Test article parsing."""
     test_file = os.path.join(os.path.dirname(__file__), "files/coin.txt")
     title = "coin"
@@ -16,7 +17,7 @@ def test_article():
     a = Article(title, text)
 
     # Print to json file
-    out_file = os.path.join(os.path.dirname(__file__), "files/coin.jsonl")
+    out_file = os.path.join(tmp_path / "coin.jsonl")
     print(out_file)
 
     with open(out_file, "w") as outf:

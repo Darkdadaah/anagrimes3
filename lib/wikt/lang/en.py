@@ -29,10 +29,12 @@ class Article(WiktArticle):
 
     def_regex = re.compile("^#+([^#*:] *.+)$")
 
-    temp_def_keep_only_par = ["lb"]
-    temp_def_keep_with_par = [""]
-    temp_def_no_parentheses = temp_def_keep_with_par
-    temp_def_no_capitalize = [""]
+    temp_def_keep_only_par1 = [""]
+    temp_def_keep_only_par2 = ["l", "lb"]
+    temp_def_keep_with_par1 = [""]
+    temp_def_no_parentheses = ["l"]
+    temp_def_no_capitalize = ["l"]
+    temp_def_remove = ["senseid", "defdate", "non-gloss"]
 
     def __init__(self, title: str, text: str) -> None:
         super().__init__(title, text)
@@ -205,16 +207,24 @@ class Article(WiktArticle):
         template_str = match.group(1)
         template = Template.from_string(template_str)
         title = template.title
-        par = ""
+        par1 = ""
+        par2 = ""
         if len(template.unnamed) > 0:
-            par = template.unnamed[0]
+            par1 = template.unnamed[0]
+        if len(template.unnamed) > 1:
+            par2 = template.unnamed[1]
         temp_str = ""
 
-        if title in self.temp_def_keep_with_par and par is not None:
-            temp_str = title + " " + par
+        if title in self.temp_def_remove:
+            return temp_str
 
-        elif title in self.temp_def_keep_only_par and par is not None:
-            temp_str = par
+        if title in self.temp_def_keep_with_par1 and par1 is not None:
+            temp_str = title + " " + par1
+
+        elif title in self.temp_def_keep_only_par1 and par1 is not None:
+            temp_str = par1
+        elif title in self.temp_def_keep_only_par2 and par2 is not None:
+            temp_str = par2
         else:
             temp_str = title
 

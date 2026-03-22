@@ -66,3 +66,8 @@ warn_unused_configs = true
 [tool.ruff]
 line-length = 110
 show-fixes = true
+
+[project.optional-dependencies]
+dev = [
+    "pytest >=7.2",
+]

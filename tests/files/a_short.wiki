@@ -1,0 +1,230 @@
+{{voir autres scripts|latin|a|cyrillique|а}}
+{{voir/a}}
+
+== {{caractère}} ==
+{{casse}}
+'''a'''
+# Première [[lettre]] et première [[voyelle]] de l’[[alphabet latin]] ([[minuscule]]). {{caractère Unicode}}.
+# [[chiffre|Chiffre]] [[hexadécimal]] [[dix]] (minuscule).
+
+=== {{S|voir aussi}} ===
+* {{WP|A (lettre)|a}}
+{{alphabet latin|a}}
+
+=== {{S|références}} ===
+* {{R:Bloc Unicode}}
+
+[[Catégorie:Chiffres hexadécimaux]]
+
+== {{langue|conv}} ==
+=== {{S|étymologie}} ===
+: {{lien-ancre-étym|conv|symb|2}} {{abréviation|de=atto-|texte='''a'''tto-|lang=conv}}.
+: {{lien-ancre-étym|conv|symb|3}} {{abréviation|de=are|texte='''a'''re|lang=conv}}.
+: {{lien-ancre-étym|conv|symb|4}} {{abréviation|conv}} du {{étyl|la|fr|mot=annum|sens=année|dif='''a'''nnum}}.
+: {{laé|conv|symb|6}} Abréviation de ''{{lien|accélération|fr|nom}}''.
+
+=== {{S|symbole|conv|num=1}} ===
+'''a'''
+# {{lexique|linguistique|conv}} Symbole de l’[[alphabet phonétique international]] pour la voyelle (ou [[vocoïde]]) ouverte antérieure non arrondie {{pron|a|conv}}.
+#* {{exemple |lang=conv |pas-trad=1 |La voyelle /'''a'''/ est celle de l’article « la » dans la quasi-totalité des dialectes du français.}}
+[[Catégorie:Symboles de l’alphabet phonétique international]]
+
+=== {{S|symbole|conv|num=2}} ===
+'''a'''
+# {{lexique|métrologie|conv}} [[symbole|Symbole]] du [[Système international]] (SI) pour le préfixe '''[[atto-]]''' (&times;[[Annexe:Principales puissances de 10|10{{e|&minus;18}}]]).{{R|SI|[https://www.bipm.org/documents/20126/41483022/SI-Brochure-9-FR.pdf/bb7be5ff-4b2f-3834-f46a-5b4af3669870 ''Le système internationale des unités 9{{e|e}} édition''], p.29, 2019}}
+
+=== {{S|symbole|conv|num=3}} ===
+'''a'''
+# {{lexique|métrologie|conv}} Symbole de l’[[are#fr|'''are''']], une [[unité de mesure]] de [[surface#fr-nom|surface]] en dehors [[SI]]. Elle prend souvent le préfixe [[h#conv|h]] pour former [[ha#conv|ha]] ([[hectare]]).
+
+=== {{S|symbole|conv|num=4}} ===
+'''a'''
+# {{lexique|métrologie|conv}} Symbole (dérivé du système SI) de l’'''[[année]]''' (365,25 jours de 86,4 [[ks]]), du latin ''[[annum]]''.
+#* {{exemple |lang=conv |pas-trad=1 |Cette roche a été formée il y a 4 G'''a'''. }}
+
+==== {{S|dérivés}} ====
+* {{lien|al|conv|sens=année-lumière}}
+
+=== {{S|symbole|conv|num=5}} ===
+'''a'''
+# {{lexique|chimie|conv}} Symbole de l’{{lien|activité chimique|fr|nom}} d’un composant.
+#* ''a<sub>i</sub>'' : l'activité du corps ''i''.
+
+=== {{S|symbole|conv|num=6}} ===
+'''a'''
+# {{lexique|physique|mécanique|conv}} Symbole de l’{{lien|accélération|fr|nom}} en tant que grandeur physique (uSI : {{lien|mètre par seconde carré|fr|nom}}, {{lien|m/s²|conv|symb}}, {{lien|m⋅s⁻²|conv|symb}} ; unité usuelle : {{lien|g|conv|symb}}).
+
+==== {{S|synonymes}} ====
+* {{lien|γ|conv|symb|sens=accélération}}
+
+==== {{S|vocabulaire}} ====
+* {{lien|v|conv|symb|sens=vitesse}}
+
+==== {{S|dérivés}} ====
+* {{lien|α|conv|symb|sens=accéléraiton angulaire}}
+
+=== {{S|références}} ===
+<references></references>
+
+== {{langue|fr}} ==
+=== {{S|lettre|fr}} ===
+{{lettre|pron=ɑ|p2=a|lang=fr}}
+'''a''' {{pron|ɑ|fr}}, {{pron|a|fr}} {{m}} {{invar}}
+# Première [[lettre]] et première [[voyelle]] de l’[[alphabet]] français.
+#* {{exemple |lang=fr |Ceci est un '''a''' minuscule.}}
+#* {{exemple |lang=fr |Le mot ''anaérobie'' contient deux '''a'''.}}
+#* {{exemple | lang=fr
+ | Je détestais, de même, que le '''''a''''' fût la première lettre de l’alphabet. Commencer par lui, c’était partir sur de mauvaises bases : le '''''a''''' constituait un être fermé, replié sur lui-même, qui ne se ressemblait en rien dès lors qu’il accédait au statut de majuscule, où sa prétention éclatait. Sa manière de poser, en tour Eiffel, son anguleuse hauteur, méprisante, annonçait que l’apprentissage de la lecture se ferait sous son magistère et dépendait de son bon vouloir. Je n’aimais pas, non plus, le mouvement de glotte qui correspondait à la prononciation du '''''a''''' ; bref, je l’avais pris en grippe et m’avisai que la bonne lettre, pour entrer en matière, était le ''z''.
+ | source={{w|Yann Moix}}, ''Orléans'', Grasset, « Le livre de poche », 2019, page 138}}
+# Le son {{pron|a|fr}} ou {{pron|ɑ|fr}} de cette lettre. {{note}} Le français parisien a perdu la distinction entre les deux.
+#* {{exemple |lang=fr |'''A''' est antérieur dans ''glace {{phon|ɡlas|fr}}'' et postérieur dans ''blâme {{phon|blɑm|fr}}''. }}
+
+==== {{S|dérivés}} ====
+{{(}}
+* [[à]]
+* [[â]]
+* [[abc]]
+* [[æ]]
+* [[A comme Anatole]]
+* [[a privatif]]
+* [[b.a.-ba]]
+* [[bombe A]]
+* [[de A à Z]], [[depuis A jusqu’à Z]]
+* [[ne savoir ni A ni B]]
+* [[panse d’a]]
+* [[prouver par a plus b]]
+{{)}}
+
+==== {{S|vocabulaire}} ====
+* [[Anatole]] : [[acrophonie]] utilisée dans l’alphabet radio et téléphonique français
+
+==== {{S|transcriptions}} ====
+{{(}}
+* {{T|ar}} : {{trad+|ar|ا|R=a}}
+* {{T|ko}} : {{trad+|ko|ㅏ|R=a}}
+* {{T|el}} : {{trad+|el|α|R=a}}
+* {{T|hi}} : {{trad+|hi|अ|R=a}}
+* {{T|iu}} : {{trad-|iu|ᐊ|R=a}}
+* {{T|ja}} : {{trad+|ja|あ|R=a}}, {{trad+|ja|ア|R=a}}
+* {{T|ru}} : {{trad+|ru|а|R=a}}
+* {{T|fsl}} : [[Image:LSF LettreA.jpg|La lettre A|20px]]
+* {{T|ty}} : {{trad|ty|a}}, {{trad|ty|ā}}
+{{)}}
+
+==== {{S|traductions}} ====
+{{trad-début|Première lettre de l’alphabet français}}
+* {{T|af}} : {{trad+|af|a}}
+* {{T|de}} : {{trad+|de|a}}
+* {{T|en}} : {{trad+|en|a}}
+* {{T|shy}} : {{trad+|shy|a}}
+* {{T|ko}} : {{trad-|ko|에이|tr=ei}}
+* {{T|hr}} : {{trad+|hr|a}}
+* {{T|eo}} : {{trad+|eo|a}}
+* {{T|gallo-italique de Basilicate}} : {{trad|gallo-italique de Basilicate|a}}
+* {{T|it}} : {{trad+|it|a}}
+* {{T|ja}} : {{trad+|ja|エー|tr=ē}}
+* {{T|avk}} : {{trad|avk|a}}
+* {{T|scn}} : {{trad+|scn|a}}
+{{trad-fin}}
+
+=== {{S|pronom personnel|fr}} ===
+'''a''' {{pron|a|fr}}
+# {{familier|fr}} Pronom personnel (indéterminé en genre et en personne : première, deuxième ou troisième).
+#* {{exemple|D’abord, je m’en fous des araignées ! Ça me fait pas peur, j’en fait la collection, j’en ai plein un bocal, '''a''' se bouffent entre elles, je rigole !.. |source={{w|Jean-Marc Lelong}}, ''Carmen Cru # 2 - La dame de fer'', 1985, éditions France Loisirs, Paris, page 30 |lang=fr }}
+#*''Quoi qu’'''a''' dit ? – '''A''' dit rin.<br />Quoi qu’'''a''' fait ? – '''A''' fait rin.<br />À quoi qu’'''a''' pense ? – '''A''' pense à rin.<br /><br />Pourquoi qu’'''a''' dit rin ?<br />Pourquoi qu’'''a''' fait rin ?<br />Pourquoi qu’'''a''' pense à rin ?<br /><br />- '''A'''’xiste pas.'' {{source|Jean Tardieu, ''La Môme Néant''}}
+# {{Québec|fr}} {{familier|fr}} [[elle#fr|Elle]].
+#* ''C’est lui qui, appréciant sa mère, d’un ton de médiocrité satisfaite, disait à Louise Guittard, en se frottant une bosse au front :<br
+/>— Pendant qu’'''a''' m’bat, on a la paix.'' {{source|{{w|Léon Frapié}}, ''{{ws|La maternelle/Texte entier|La Maternelle}}'', Librairie Universelle, 1908}}
+#* {{exemple|lang=fr
+ |— Une môme, les mecs… Une môme ! Visez ! '''A''' l’est presque à poil !
+|source={{w|Yves Gibeau}}, ''Allons z’enfants'', 1952}}
+#* ''C’était pendant l’congé d’Noël<br
+/>J’voulais déjà m’marier avec elle<br
+/>'''A''' m’a appelé tantôt après les nouvelles.'' {{source|Les Cowboys fringants, « Le Quai de Berthier » (chanson), 1998}}
+#* {{exemple | lang=fr
+ | Quand '''a''' l’ouvre la porte pis qu''''a''' sort d’la scène, '''a''' l’arrête d’exister pour toi [[pis]] tu t’en [[sacrer|sacres]], [[d’abord que]] t’as écrit des belles scènes!
+ | source={{w|Michel Tremblay}}, ''Le Vrai Monde?'', 1987}}
+#* {{exemple | lang=fr
+ | Ta mère est venue me voir en catastrophe. Au début, '''a''' voulait te laisser aller, mais ç’a pas été long qu’'''a''' l’a regretté.
+ | source=Éric St-Pierre, ''Rabaskabarnak'', {{w|Québec Amérique}}, 2019, page 100}}
+
+==== {{S|variantes orthographiques}} ====
+* [[à]]
+
+==== {{S|traductions}} ====
+{{trad-début|Pronom personnel indéterminé}}
+{{trad-fin}}
+
+=== {{S|verbe|fr|flexion}} ===
+{{fr-verbe-flexion|grp=3|'=oui|ind.p.3s=oui|avoir}}
+'''a''' {{pron|a|fr}}
+# ''Troisième personne du singulier de l’indicatif de'' [[avoir]].
+#* {{exemple | lang=fr
+ | Nous les hommes des douars lointains, des hauts djebels, des larges vallées, nous savions que l’on ne bâtit pas sa maison si l’on n’'''a''' pas confiance dans la solidité du sol.
+ | source=Bachaga Boualam, ''Les Harkis au service de la France'', France-Empire, 1963, page 26}}
+
+==== {{S|phrases}} ====
+* [[cœur qui soupire n’a pas ce qu’il désire]]
+* [[gentil n’a qu’un œil]]
+* [[la nature a horreur du vide]] ''({{cf|lang=fr|avoir horreur}})''
+* [[la plus belle fille du monde ne peut donner que ce qu’elle a]]
+* [[on n’a rien pour rien]]
+* [[qui a du pain nargue le chagrin]]
+* [[qui doit n’a rien à soi]]
+* [[qui n’entend qu’une cloche n’a qu’un son]]
+* [[qui ne risque rien n’a rien]]
+* [[qui ne tente rien n’a rien]]
+* [[qui terre a guerre a]]
+* [[un mauvais ouvrier a toujours de mauvais outils]]
+
+=== {{S|prononciation}} ===
+* {{pron|a|fr}}
+** {{écouter|Canada (Montréal)|a|audio=Fr-CA-a.oga|lang=fr}}
+** {{écouter|lang=fr|France (Brétigny-sur-Orge)|a|audio=LL-Q150 (fra)-Pamputt-a.wav}}
+** {{écouter|lang=fr|France (Lyon)|a|audio=LL-Q150 (fra)-Ltrlg-a.wav}}
+** {{écouter|lang=fr||a|audio=LL-Q150 (fra)-Kiminou1-a.wav}}
+** {{écouter||a|lang=fr|audio=LL-Q150 (fra)-Lyokoï-a.wav}}
+** {{écouter|lang=fr|France (Canet)|a|audio=LL-Q150 (fra)-Guilhelma-a.wav}}
+** {{écouter|lang=fr|France (Toulouse)|a|audio=LL-Q150 (fra)-Lepticed7-a.wav}}
+* {{pron|ɑ|fr}}
+** {{écouter|France (Paris)|ɑ|audio=Fr-FR-A.oga|lang=fr}}
+** {{écouter||ɑ|lang=fr|audio=LL-Q150 (fra)-Jules78120-a.wav}}
+* {{Canada|nocat=1}} {{populaire|nocat=1}} {{pron|ɔ|fr}}
+* {{écouter|lang=fr|France (Vosges)||audio=LL-Q150 (fra)-LoquaxFR-a.wav}}
+* {{écouter|lang=fr|Suisse (canton du Valais)||audio=LL-Q150 (fra)-DSwissK-a.wav}}
+* {{écouter|lang=fr|Canada (Shawinigan)||audio=LL-Q150 (fra)-DenisdeShawi-a.wav}}
+* {{écouter|lang=fr|France (Vosges)||audio=LL-Q150 (fra)-Poslovitch-a.wav}}
+* {{écouter|lang=fr|France||audio=LL-Q150 (fra)-Mecanautes-a.wav}}
+* {{écouter|Québec (Canada)||lang=fr|audio=LL-Q150 (fra)-Estrie-a.wav}}
+* {{écouter|||lang=fr|audio=LL-Q150 (fra)-Sayoxime-a.wav}}
+
+=== {{S|références}} ===
+* {{R:DAF8}}
+* {{cit_réf<!--
+-->|Grand Larousse de la langue française en six volumes'', tome 1, ''A-Cippe<!--
+-->|Larousse, Paris, 1989<!--
+-->|Louis Guilbert, René Lagane, Georges Niobey<!--
+-->|lien=http://gallica.bnf.fr/ark:/12148/bpt6k1200532b<!--
+-->}}
+
+[[Catégorie:Mots sans consonne en français]]
+
+== {{langue|abp}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|abp}}
+
+=== {{S|particule|abp}} ===
+'''a''' {{pron||abp}}
+# {{sens incertain|abp}} Connecteur logique.
+
+=== {{S|références}} ===
+* {{R:SIL-lexique-abp}}
+
+== {{langue|aa}} ==
+=== {{S|étymologie}} ===
+: {{ébauche-étym|aa}}
+
+=== {{S|adjectif démonstratif|aa}} ===
+'''a''' {{pron|a|aa}}
+# [[ce|Ce]].
+

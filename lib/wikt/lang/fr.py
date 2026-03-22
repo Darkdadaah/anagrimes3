@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from re import Match
 
-from wikt.data.en import word_types, word_attributes
+from wikt.data.fr import word_types, word_attributes
 from wikt.wiki import Template
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 

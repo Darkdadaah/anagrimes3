@@ -1,6 +1,7 @@
-"""Basic Wiki parsing."""
+"""Basic Wiki code parsing from a page."""
 
 from __future__ import annotations
+from dataclasses import dataclass, field
 import logging
 import re
 from typing import Self
@@ -13,6 +14,7 @@ class WikiParserError(Exception):
     """Raised when parsing the wiki code fails."""
 
 
+@dataclass
 class Template:
     """Generic Wiki Template representation.
 
@@ -21,20 +23,12 @@ class Template:
         unnamed: An ordered list of unnamed parameters.
         named: A dictionary of named parameters.
     """
+    title: str
+    unnamed: list[str] = field(default_factory=list)
+    named: dict[str, str] = field(default_factory=dict)
 
     _template_inside_regex = re.compile(r"^ *\{\{ *([^\}]+) *\}\} *$")
     _template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
-
-    def __init__(
-        self, title: str, unnamed: None | list[str] = None, named: None | dict[str, str] = None
-    ) -> None:
-        self.title = title
-        self.unnamed = []
-        self.named = {}
-        if unnamed:
-            self.unnamed = unnamed
-        if named:
-            self.named = named
 
     def __repr__(self):
         return "{{ " + f"{self.title} | {self.unnamed} || {self.named} " + "}}"
@@ -116,25 +110,34 @@ class WikiBase:
         logging.debug(f"DEBUG\t[[{self.title}]]\t{name}\t{detail}")
 
 
+@dataclass
 class Section:
-    """A wiki section."""
+    """A wiki section.
 
-    def __init__(self, title: str, level: int):
-        self.title = title
-        self.level = level
-        self.text: list[str] = []
-        self.subsections: list[Self] = []
+    Attributes:
+        title (str): The title of the section.
+        level (int): The level of the section (based on the number of =).
+        text (list[str]): The text of the section (excluding the section title).
+        subsections (list[Section]): A list of subsections within this section (under the text if any).
+    """
+
+    title: str
+    level: int
+    text: list[str] = field(default_factory=list)
+    subsections: list[Self] = field(default_factory=list)
 
     def __str__(self) -> str:
         sub_str = ",".join([str(sec) for sec in self.subsections])
         return f"{self.title}({sub_str})"
 
-    def add_text(self, text: str) -> None:
+    def add_text_line(self, text: str) -> None:
         """Add a line of text to the section."""
         self.text.append(text)
 
     def add_subsection(self, sec: Self) -> None:
         """Add a subsection to the section."""
+        if sec.level >= self.level:
+            raise WikiParserError(f"Subsection is higher than its parent: {sec.level} >= {self.level}")
         self.subsections.append(sec)
 
 
@@ -214,6 +217,7 @@ class WikiArticle(WikiBase):
                     else:
                         self.log(f"No section2 for {section_title}")
             else:
-                cur_section.add_text("")
+                cur_section.add_text_line("")
 
         return self._top_section
+

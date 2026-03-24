@@ -7,7 +7,7 @@ import re
 from re import Match
 
 from wikt.data.fr import word_types, word_attributes
-from wikt.wiki import Template
+from wikt.wiki.template import Template
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
 __all__ = ["Article"]

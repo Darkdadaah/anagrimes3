@@ -16,7 +16,7 @@ MAX_BATCH_FILES = 100_000
 
 
 def batch_file_writer(xml_file: Path, output_dir: Path, file_name: str) -> Generator[FileIO, None, None]:
-    """Yield file objects for writing batches of data.
+    """Yield file objects for writing batches of mediawiki split xml files.
 
     Adds the mediawiki header and footer to each file.
     """
@@ -45,7 +45,20 @@ def batch_file_writer(xml_file: Path, output_dir: Path, file_name: str) -> Gener
 
 
 def split_xml(xml_file: Path, output_dir: Path, file_name: str, batch_size: int = DEFAULT_BATCH) -> None:
-    """Split a Mediawiki xml dump into smaller files."""
+    """Split a Mediawiki xml dump into smaller files.
+
+    Attributes:
+        xml_file (Path): Path to the Mediawiki XML dump
+        output_dir (Path): Directory where the split files will be saved
+        file_name (str): Base name of the output files
+        batch_size (int, optional): Number of articles per file
+
+    Raises:
+        FileNotFoundError: If the output directory does not exist
+    """
+    # Check if output directory exists
+    if not output_dir.exists():
+        raise FileNotFoundError(f"Output directory {output_dir} does not exist")
 
     num_articles = 0
     files_gen = batch_file_writer(xml_file, output_dir, file_name)

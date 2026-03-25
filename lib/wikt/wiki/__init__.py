@@ -18,6 +18,9 @@ MAX_UNAMED = 50
 class WikiParserError(Exception):
     """Raised when parsing the wiki code fails."""
 
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
 
 class WikiBase:
     """A base Wiki object with an article title, for easier logging."""

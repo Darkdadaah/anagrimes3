@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
-# import logging
+import logging
 import re
 from re import Match
 
+
 from wikt.data.fr import word_types, word_attributes
-from wikt.wiki.template import Template
+from wikt.wiki.template import Template, TemplateError
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 
+
 __all__ = ["Article"]
+
+
+logger = logging.getLogger(__name__)
 
 
 class Form(WiktForm):
@@ -89,10 +94,10 @@ class Article(WiktArticle):
 
                 # Language section
                 if level == 2:
-                    section = Template.from_string(section_title)
-
-                    if not section:
-                        self.log("Section 2 is not a template", line)
+                    try:
+                        section = Template.from_string(section_title)
+                    except TemplateError as e:
+                        logger.info(f"Section 2 is not a template in {line}: {e}")
                         continue
 
                     if section.title == "langue":
@@ -110,10 +115,10 @@ class Article(WiktArticle):
                         lang = ""
                         self.log("Unrecognized level 2 section template", line)
                 elif lang and level == 3:
-                    section = Template.from_string(section_title)
-
-                    if not section:
-                        self.log("Section 3 is not a template", line)
+                    try:
+                        section = Template.from_string(section_title)
+                    except TemplateError as e:
+                        logger.info(f"'{self.title}' has malformed template in section {line}: {e}")
                         continue
 
                     templ_name = section.title

@@ -14,6 +14,9 @@ MAX_UNAMED = 50
 class TemplateError(Exception):
     """Raised when parsing a template fails."""
 
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
 
 @dataclass
 class Template:
@@ -51,7 +54,7 @@ class Template:
             title = templ_parts.pop(0).strip()  # First part = name of template
 
             if not title:
-                raise TemplateError("Invalid template name")
+                raise TemplateError(f"Invalid template name from {template_str}")
 
             for part in templ_parts:
                 part = part.strip()
@@ -66,8 +69,8 @@ class Template:
                             pindex = int(pkey) - 1
                             unnamed[pindex] = pval
                             max_index = pindex
-                        except IndexError:
-                            print(f"WARNING: Template too many arguments past max {MAX_UNAMED}. Ignoring more")
+                        except IndexError as e:
+                            raise TemplateError(f"Too many arguments past max {MAX_UNAMED}") from e
                     else:
                         named[pkey] = pval
                 else:
@@ -75,11 +78,11 @@ class Template:
                     unnamed[ordered_index] = pval
                     ordered_index += 1
         else:
-            raise TemplateError("Invalid template format")
+            raise TemplateError(f"Invalid template format: {template_str}")
 
         # Trim unnamed
         last_index = max_index if max_index > ordered_index else ordered_index
-        unnamed = unnamed[0 : last_index]
+        unnamed = unnamed[0:last_index]
         if len(unnamed) == 1 and unnamed[0] == "":
             unnamed = []
 

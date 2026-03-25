@@ -3,8 +3,7 @@
 Unit tests for the Template class.
 """
 import pytest
-from wikt.wiki.template import Template, TemplateError
-
+from wikt.wiki.template import Template, TemplateError, MAX_UNAMED
 
 
 def test_repr():
@@ -13,14 +12,24 @@ def test_repr():
     assert repr(template) == "{{ Template1 | ['arg1'] || {'B': 'arg2'} }}"
 
 
+def test_max_params():
+    """Test max_params method."""
+    pars_list = []
+    for par in range(1, MAX_UNAMED + 2):
+        pars_list.append(f"{par} = val{par}")
+    temp_str = r"{{ Template | " + " | ".join(pars_list) + r" }}"
+    with pytest.raises(TemplateError):
+        Template.from_string(temp_str)
+
+
 @pytest.mark.parametrize(
     "template_str, expected_title, expected_named, expected_unnamed",
     [
-        ("{{ Template1 | arg1 | arg2 }}", "Template1", {}, ['arg1', 'arg2']),
+        ("{{ Template1 | arg1 | arg2 }}", "Template1", {}, ["arg1", "arg2"]),
         ("{{ Template1 | A=arg1 | B = arg2 }}", "Template1", {"A": "arg1", "B": "arg2"}, []),
         ("{{ Template1 | A=arg1 | B= }}", "Template1", {"A": "arg1"}, []),
         ("{{ Template1 | }}", "Template1", {}, []),
-    ]
+    ],
 )
 def test_from_string(template_str, expected_title, expected_named, expected_unnamed):
     """Test the from_string method of the Template class."""
@@ -35,7 +44,7 @@ def test_from_string(template_str, expected_title, expected_named, expected_unna
     [
         ("{{}}"),
         ("{{ | arg1 | B = arg2 }}"),
-    ]
+    ],
 )
 def test_from_string_failures(template_str):
     """Test the from_string method of the Template class with invalid inputs."""
@@ -49,7 +58,7 @@ def test_from_string_failures(template_str):
     [
         ("{{ Template1 | 1=arg1 | 2=arg2 }} {{Template2}}", ["Template1", "Template2"]),
         ("", []),
-    ]
+    ],
 )
 def test_list_templates(line_str, expected_titles):
     """Test the list_templates method of the Template class."""

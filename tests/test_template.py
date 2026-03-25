@@ -6,11 +6,20 @@ import pytest
 from wikt.wiki.template import Template, TemplateError
 
 
+
+def test_repr():
+    """Test __repr__ method."""
+    template = Template(title="Template1", unnamed=["arg1"], named={"B": "arg2"})
+    assert repr(template) == "{{ Template1 | ['arg1'] || {'B': 'arg2'} }}"
+
+
 @pytest.mark.parametrize(
     "template_str, expected_title, expected_named, expected_unnamed",
     [
         ("{{ Template1 | arg1 | arg2 }}", "Template1", {}, ['arg1', 'arg2']),
         ("{{ Template1 | A=arg1 | B = arg2 }}", "Template1", {"A": "arg1", "B": "arg2"}, []),
+        ("{{ Template1 | A=arg1 | B= }}", "Template1", {"A": "arg1"}, []),
+        ("{{ Template1 | }}", "Template1", {}, []),
     ]
 )
 def test_from_string(template_str, expected_title, expected_named, expected_unnamed):
@@ -35,13 +44,18 @@ def test_from_string_failures(template_str):
         print(t)
 
 
-def test_list_templates():
+@pytest.mark.parametrize(
+    "line_str, expected_titles",
+    [
+        ("{{ Template1 | 1=arg1 | 2=arg2 }} {{Template2}}", ["Template1", "Template2"]),
+        ("", []),
+    ]
+)
+def test_list_templates(line_str, expected_titles):
     """Test the list_templates method of the Template class."""
-    line_str = "{{ Template1 | 1=arg1 | 2=arg2 }} {{ Template2 | 3=arg3 }}"
     templates = Template.list_templates(line_str)
-    assert len(templates) == 2
-    assert templates[0].title == "Template1"
-    assert templates[1].title == "Template2"
+    titles = [t.title for t in templates]
+    assert titles == expected_titles
 
 
 def test_list_templates_empty():

@@ -33,6 +33,7 @@ class Template:
     _template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
 
     def __repr__(self):
+        print(f"Title? '{self.title}'")
         return "{{ " + f"{self.title} | {self.unnamed} || {self.named} " + "}}"
 
     @classmethod
@@ -94,10 +95,8 @@ class Template:
         for temp_str in line_str.split(r"}}"):
             if not temp_str.strip():
                 continue
-            if not temp_str.endswith(r"}}"):
-                temp_str = temp_str + "}}"
+            temp_str = temp_str + "}}"
             temp = Template.from_string(temp_str)
-            if temp.title:
-                templates.append(temp)
+            templates.append(temp)
 
         return templates

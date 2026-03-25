@@ -9,6 +9,9 @@ from typing import Self
 from .template import Template
 
 
+__all__ = ["WikiParserError", "WikiBase", "Template"]
+
+
 MAX_UNAMED = 50
 
 

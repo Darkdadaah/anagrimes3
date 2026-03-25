@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 import re
 
 
+__all__ = ["Template", "TemplateError"]
+
+
 MAX_UNAMED = 50
 
 
@@ -44,9 +47,13 @@ class Template:
         if templ_match := cls._template_inside_regex.search(template_str):
             templ_content = templ_match.group(1)
             templ_parts = templ_content.split("|")
-            title = templ_parts.pop(0)  # First part = named of template
+            title = templ_parts.pop(0).strip()  # First part = name of template
+
+            if not title:
+                raise TemplateError("Invalid template name")
 
             for part in templ_parts:
+                part = part.strip()
                 # key-value pair
                 if part_match := cls._template_parts_regex.search(part):
                     pkey = part_match.group(1)
@@ -59,19 +66,19 @@ class Template:
                             unnamed[pindex] = pval
                             max_index = pindex
                         except IndexError:
-                            print("WARNING: Template too many arguments past max {MAX_UNAMED}. Ignoring more")
+                            print(f"WARNING: Template too many arguments past max {MAX_UNAMED}. Ignoring more")
                     else:
                         named[pkey] = pval
                 else:
                     pval = part.strip()
                     unnamed[ordered_index] = pval
                     ordered_index += 1
-
-        # TODO: should throw if no title or parsing failed somehow
+        else:
+            raise TemplateError("Invalid template format")
 
         # Trim unnamed
         last_index = max_index if max_index > ordered_index else ordered_index
-        unnamed = unnamed[0 : last_index + 1]
+        unnamed = unnamed[0 : last_index]
         if len(unnamed) == 1 and unnamed[0] == "":
             unnamed = []
 

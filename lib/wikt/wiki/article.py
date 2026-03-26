@@ -63,9 +63,6 @@ class WikiArticle(WikiBase):
             return True
         return False
 
-    def _parse_sec_title(self, text: str) -> str:
-        return text
-
     def top_section(self) -> Section:
         """Parse out hierarchy of sections from a wiki text."""
         if self._top_section:

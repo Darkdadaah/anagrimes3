@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 
 from .base import WikiBase
+from .error import WikiParserError
 from .section import Section
 
 
@@ -13,11 +14,8 @@ __all__ = ["WikiArticle", "WikiArticleError"]
 MAX_UNAMED = 50
 
 
-class WikiArticleError(Exception):
+class WikiArticleError(WikiParserError):
     """Raised when parsing the wiki code fails."""
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
 
 
 class WikiArticle(WikiBase):

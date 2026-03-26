@@ -4,6 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import re
 
+from wikt.wiki.error import WikiParserError
+
 
 __all__ = ["Template", "TemplateError"]
 
@@ -11,11 +13,8 @@ __all__ = ["Template", "TemplateError"]
 MAX_UNAMED = 50
 
 
-class TemplateError(Exception):
+class TemplateError(WikiParserError):
     """Raised when parsing a template fails."""
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
 
 
 @dataclass

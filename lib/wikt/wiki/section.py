@@ -4,6 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Self
 
+from wikt.wiki.error import WikiParserError
+
 
 __all__ = ["Section", "SectionError"]
 
@@ -11,11 +13,8 @@ __all__ = ["Section", "SectionError"]
 MAX_LEVEL = 6
 
 
-class SectionError(Exception):
+class SectionError(WikiParserError):
     """Raised when parsing a section fails."""
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
 
 
 @dataclass

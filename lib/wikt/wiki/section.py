@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Self
 
 
-__all__ = ["Section"]
+__all__ = ["Section", "SectionError"]
 
 
 MAX_LEVEL = 6
@@ -41,7 +41,7 @@ class Section:
         if self.level > MAX_LEVEL:
             raise SectionError(f"Section level can't be higher than {MAX_LEVEL}")
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         sub_str = ",".join([str(sec) for sec in self.subsections])
         return f"{self.title}({sub_str})"
 
@@ -51,6 +51,6 @@ class Section:
 
     def add_subsection(self, sec: Self) -> None:
         """Add a subsection to the section."""
-        if sec.level >= self.level:
+        if sec.level <= self.level:
             raise SectionError(f"Subsection is higher than its parent: {sec.level} >= {self.level}")
         self.subsections.append(sec)

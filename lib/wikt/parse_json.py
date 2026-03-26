@@ -72,6 +72,10 @@ def main():
                     print(f"\r{num:09d} articles", end="")
                 article = wiktionary.Article(title, text)
 
+                if not article.words:
+                    noword += 1
+
+
                 for word in article.words:
                     outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Get controlled vocabulary from Wiktionary."""
 
+import argparse
 import json
 import logging
 from pathlib import Path
@@ -16,7 +17,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s\t%(message)s')
 
 
 URL = "https://fr.wiktionary.org/w/index.php?title=Module:section_article/data&action=raw"
-USER_AGENT = "AnagrimesBot/3.0 (https://github.com/Darkdadaah/anagrimes3)"
 
 
 def get_raw_data(url: str, user_agent: str, cache_file: Path) -> list[str]:
@@ -72,11 +72,11 @@ def unluafy(code: Any) -> Any:
     return code
 
 
-def process_sections(out_dir: Path, cache_dir: Path) -> None:
+def process_sections(out_dir: Path, cache_dir: Path, user_agent: str) -> None:
     """Process sections from the Lua code."""
     logger.info("Starting to process sections.")
     cache_file = cache_dir / "./file_sections.lua"
-    raw_lua = get_raw_data(URL, USER_AGENT, cache_file)
+    raw_lua = get_raw_data(URL, user_agent, cache_file)
 
     # Make lua return a function that returns the data.
     lua_code = "function(L)\n" + raw_lua + "\nend"
@@ -91,9 +91,12 @@ def process_sections(out_dir: Path, cache_dir: Path) -> None:
 
 def main() -> None:
     """Main entrypoint."""
-    out_dir = Path("output/")
-    cache_dir = Path("cache/")
-    process_sections(out_dir, cache_dir)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out_dir", type=Path, required=True, help="Output directory for the sections.json file")
+    parser.add_argument("--cache_dir", type=Path, required=True, help="Cache directory for the Lua code downloaded from Wiktionary")
+    parser.add_argument("--user_agent", type=str, required=True, help="User agent to download from Wiktionary")
+    args = parser.parse_args()
+    process_sections(args.out_dir, args.cache_dir, args.user_agent)
 
 
 if __name__ == "__main__":

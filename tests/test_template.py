@@ -9,7 +9,7 @@ from wikt.wiki.template import Template, TemplateError, MAX_UNAMED
 def test_repr():
     """Test __repr__ method."""
     template = Template(title="Template1", unnamed=["arg1"], named={"B": "arg2"})
-    assert repr(template) == "{{ Template1 | ['arg1'] || {'B': 'arg2'} }}"
+    assert repr(template) == r"{{ Template1 | ['arg1'] || {'B': 'arg2'} }}"
 
 
 def test_max_params():
@@ -25,10 +25,10 @@ def test_max_params():
 @pytest.mark.parametrize(
     "template_str, expected_title, expected_named, expected_unnamed",
     [
-        ("{{ Template1 | arg1 | arg2 }}", "Template1", {}, ["arg1", "arg2"]),
-        ("{{ Template1 | A=arg1 | B = arg2 }}", "Template1", {"A": "arg1", "B": "arg2"}, []),
-        ("{{ Template1 | A=arg1 | B= }}", "Template1", {"A": "arg1"}, []),
-        ("{{ Template1 | }}", "Template1", {}, []),
+        (r"{{ Template1 | arg1 | arg2 }}", "Template1", {}, ["arg1", "arg2"]),
+        (r"{{ Template1 | A=arg1 | B = arg2 }}", "Template1", {"A": "arg1", "B": "arg2"}, []),
+        (r"{{ Template1 | A=arg1 | B= }}", "Template1", {"A": "arg1"}, []),
+        (r"{{ Template1 | }}", "Template1", {}, []),
     ],
 )
 def test_from_string(template_str, expected_title, expected_named, expected_unnamed):
@@ -42,8 +42,8 @@ def test_from_string(template_str, expected_title, expected_named, expected_unna
 @pytest.mark.parametrize(
     "template_str",
     [
-        ("{{}}"),
-        ("{{ | arg1 | B = arg2 }}"),
+        (r"{{}}"),
+        (r"{{ | arg1 | B = arg2 }}"),
     ],
 )
 def test_from_string_failures(template_str):
@@ -56,8 +56,8 @@ def test_from_string_failures(template_str):
 @pytest.mark.parametrize(
     "line_str, expected_titles",
     [
-        ("{{ Template1 | 1=arg1 | 2=arg2 }} {{Template2}}", ["Template1", "Template2"]),
-        ("", []),
+        (r"{{ Template1 | 1=arg1 | 2=arg2 }} {{Template2}}", ["Template1", "Template2"]),
+        (r"", []),
     ],
 )
 def test_list_templates(line_str, expected_titles):
@@ -65,10 +65,3 @@ def test_list_templates(line_str, expected_titles):
     templates = Template.list_templates(line_str)
     titles = [t.title for t in templates]
     assert titles == expected_titles
-
-
-def test_list_templates_empty():
-    """Test the list_templates method of the Template class with an empty string."""
-    line_str = ""
-    templates = Template.list_templates(line_str)
-    assert len(templates) == 0

@@ -185,3 +185,24 @@ word_attributes = {
     "t": "t",
     "transitif": "t",
 }
+
+# https://fr.wiktionary.org/wiki/Module:section_article/data
+# TODO: generate this page automatically
+word_subsections = {
+    "composés",
+    "compos",
+    "anciennes orthographes",
+    "anagrammes",
+    "prononciation",
+    "dico sinogrammes",
+    "étymologie",
+    "dérivés",
+    "références",
+    "synonymes",
+    "variantes",
+    "vocabulaire",
+    "voir aussi",
+    "voir",
+    "écriture",
+    "notes",
+}

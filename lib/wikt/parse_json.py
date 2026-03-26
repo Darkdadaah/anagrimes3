@@ -75,7 +75,6 @@ def main():
                 if not article.words:
                     noword += 1
 
-
                 for word in article.words:
                     outf.write(json.dumps(word.struct(), ensure_ascii=False) + "\n")
 

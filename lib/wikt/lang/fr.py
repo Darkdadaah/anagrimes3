@@ -7,7 +7,7 @@ import re
 from re import Match
 
 
-from wikt.data.fr import word_types, word_attributes
+from wikt.data.fr import word_types, word_attributes, word_subsections
 from wikt.wiki.template import Template, TemplateError
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
 from wikt.wiki import parser_log, WikiContext
@@ -122,6 +122,7 @@ class Article(WiktArticle):
                         lang = ""
                         parser_log(context, "Unrecognized level 2 section template", line, debug=True)
                 elif lang and level == 3:
+                    context.section = lang
                     try:
                         section = Template.from_string(section_title)
                     except TemplateError:
@@ -147,6 +148,9 @@ class Article(WiktArticle):
                             if sname in word_types:
                                 wtype = word_types[sname]
                                 add_word = True
+                            elif sname not in word_subsections:
+                                parser_log(context, "Word type section not recognized", line)
+                                # add_word = True
 
                             # Check if this is considered a word section
                             if add_word and wlang is None:

@@ -72,6 +72,10 @@ dev = [
     "pytest >=7.2",
     "coverage",
 ]
+update = [
+    "lupa",
+    "requests",
+]
 
 # Dev configuration
 [tool.pytest.ini_options]

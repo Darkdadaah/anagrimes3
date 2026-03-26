@@ -7,6 +7,7 @@ import re
 from typing import Self
 
 from .template import Template
+from .section import Section
 
 
 __all__ = ["WikiParserError", "WikiBase", "Template"]
@@ -35,37 +36,6 @@ class WikiBase:
     def debug(self, name: str, detail: str = "") -> None:
         """Custom print to log as debug."""
         logging.debug(f"DEBUG\t[[{self.title}]]\t{name}\t{detail}")
-
-
-@dataclass
-class Section:
-    """A wiki section.
-
-    Attributes:
-        title (str): The title of the section.
-        level (int): The level of the section (based on the number of =).
-        text (list[str]): The text of the section (excluding the section title).
-        subsections (list[Section]): A list of subsections within this section (under the text if any).
-    """
-
-    title: str
-    level: int
-    text: list[str] = field(default_factory=list)
-    subsections: list[Self] = field(default_factory=list)
-
-    def __str__(self) -> str:
-        sub_str = ",".join([str(sec) for sec in self.subsections])
-        return f"{self.title}({sub_str})"
-
-    def add_text_line(self, text: str) -> None:
-        """Add a line of text to the section."""
-        self.text.append(text)
-
-    def add_subsection(self, sec: Self) -> None:
-        """Add a subsection to the section."""
-        if sec.level >= self.level:
-            raise WikiParserError(f"Subsection is higher than its parent: {sec.level} >= {self.level}")
-        self.subsections.append(sec)
 
 
 class WikiArticle(WikiBase):

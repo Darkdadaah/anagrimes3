@@ -9,6 +9,8 @@ from typing import Self
 from .template import Template
 from .section import Section
 
+logger = logging.getLogger(__name__)
+
 
 __all__ = ["WikiParserError", "WikiBase", "Template"]
 
@@ -21,6 +23,29 @@ class WikiParserError(Exception):
 
     def __init__(self, message: str) -> None:
         super().__init__(message)
+
+
+@dataclass
+class WikiContext:
+    """Context for parsing a wiki page. for logging."""
+
+    title: str
+    section: str = ""
+
+    def __str__(self) -> str:
+        s = f"[[{self.title}]]"
+        if self.section:
+            s += f"#{self.section}"
+        return s
+
+
+def parser_log(context: WikiContext, name: str, details: str = "", debug=False) -> None:
+    """Log a message with the current wiki context."""
+    s = f"{str(context):<20}\t{name:<40}\t{details}"
+    if debug:
+        logger.debug(s)
+    else:
+        logger.info(s)
 
 
 class WikiBase:
@@ -38,9 +63,10 @@ class WikiBase:
         logging.debug(f"DEBUG\t[[{self.title}]]\t{name}\t{detail}")
 
 
-class WikiArticle(WikiBase):
+class WikiArticle:
     """General Wiki page split in wiki sections."""
 
+    title: str
     text: str
 
     _section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")
@@ -49,17 +75,18 @@ class WikiArticle(WikiBase):
     html_comment = re.compile("<!--.*?-->", flags=re.DOTALL)
 
     def __init__(self, title: str, text: str):
-        super().__init__(title)
-
+        self.title = title
         text = re.sub(self.html_comment, "", text)
         self.text = text
         self._top_section: Section | None = None
 
     def parse_section_title(self, section_str: str) -> tuple[int, str]:
         """Extract the level and content of the section title."""
+
         sec_match = self._section_regex.search(section_str.strip())
         if not sec_match:
-            self.log("Can't parse section", section_str)
+            context = WikiContext(self.title)
+            parser_log(context, "Can't parse section", section_str)
             return (0, "")
 
         sec_start = sec_match.group(1)
@@ -73,7 +100,8 @@ class WikiArticle(WikiBase):
             if sec_start == sec_signs:
                 sec_level = nlevel
                 if sec_end != sec_signs:
-                    self.log("Section level start and end differ", section_str)
+                    context = WikiContext(self.title, sec_title)
+                    parser_log(context, "Section level start and end differ", section_str)
 
         return (sec_level, sec_title)
 
@@ -112,7 +140,8 @@ class WikiArticle(WikiBase):
                         cur_sec2.add_subsection(cur_sec3)
                         cur_section = cur_sec3
                     else:
-                        self.log(f"No section2 for {section_title}")
+                        context = WikiContext(self.title, section_title)
+                        parser_log(context, "No section2", line)
             else:
                 cur_section.add_text_line("")
 

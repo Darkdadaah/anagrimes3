@@ -10,6 +10,7 @@ from re import Match
 from wikt.data.fr import word_types, word_attributes
 from wikt.wiki.template import Template, TemplateError
 from wikt.wiktionary import WiktArticle, WiktForm, WiktWord
+from wikt.wiki import parser_log, WikiContext
 
 
 __all__ = ["Article"]
@@ -72,12 +73,14 @@ class Article(WiktArticle):
         cur_word = None
         has_char_section = False
 
+        context = WikiContext(self.title)
+
         if not self.text:
-            self.debug("No text")
+            parser_log(context, "No text")
             return []
 
         if self.is_redirect():
-            self.debug("Redirect")
+            parser_log(context, "Redirect", debug=True)
             return []
 
         # top = self.top_section()
@@ -88,16 +91,20 @@ class Article(WiktArticle):
             if line.startswith("=="):
                 (level, section_title) = self.parse_section_title(line)
 
-                if not level or not section_title:
-                    self.debug("Skip section", line)
+                if not section_title:
+                    parser_log(context, "Skip section, no proper title", line)
+                    continue
+
+                if not level:
+                    parser_log(context, "Skip section, no level determined", line)
                     continue
 
                 # Language section
                 if level == 2:
                     try:
                         section = Template.from_string(section_title)
-                    except TemplateError as e:
-                        logger.info(f"Section 2 is not a template in {line}: {e}")
+                    except TemplateError:
+                        parser_log(context, "Section 2 is not a proper template", line)
                         continue
 
                     if section.title == "langue":
@@ -106,19 +113,19 @@ class Article(WiktArticle):
                             lang = pars[0]
                         else:
                             lang = ""
-                            self.log("Langue section has no lang parameter", line)
+                            parser_log(context, r"{{langue}} section has no lang parameter", line)
                     elif section.title == "caractère":
                         lang = ""
-                        self.debug("Skip Caractere section", line)
+                        parser_log(context, r"Skip section {{caractère}}", line, debug=True)
                         has_char_section = True
                     else:
                         lang = ""
-                        self.log("Unrecognized level 2 section template", line)
+                        parser_log(context, "Unrecognized level 2 section template", line, debug=True)
                 elif lang and level == 3:
                     try:
                         section = Template.from_string(section_title)
-                    except TemplateError as e:
-                        logger.info(f"'{self.title}' has malformed template in section {line}: {e}")
+                    except TemplateError:
+                        parser_log(context, "Malformed section template", line)
                         continue
 
                     templ_name = section.title
@@ -144,7 +151,7 @@ class Article(WiktArticle):
                             # Check if this is considered a word section
                             if add_word and wlang is None:
                                 wlang = lang
-                                self.log("Word has no lang", lang)
+                                parser_log(context, "Word has no lang", lang)
 
                             # Create a word
                             if add_word:
@@ -161,7 +168,7 @@ class Article(WiktArticle):
                                     if pars[2] == "flexion":
                                         is_flexion = True
                                     else:
-                                        self.log("Parameter 3 should be flexion", line)
+                                        parser_log(context, "Parameter 3 should be flexion", line)
 
                                 # Check if locution
                                 is_locution = False
@@ -180,14 +187,13 @@ class Article(WiktArticle):
                                 )
 
                                 if wlang != lang:
-                                    self.log(
-                                        "Langue section parameter is different from word section section",
-                                        f"{lang} vs {wlang}",
+                                    parser_log(
+                                        context, f"Section/word language mismatch ({lang} vs {wlang})", line
                                     )
                         else:
-                            self.log("Level 3 section has no type parameter", line)
+                            parser_log(context, "Level 3 section has no type parameter", line)
                     else:
-                        self.log(f"Unrecognized level 3 template from '{section_title}'", line)
+                        parser_log(context, "Unrecognized level 3 template", line)
                 elif cur_word:
                     words.append(cur_word)
                     cur_word = None
@@ -199,14 +205,17 @@ class Article(WiktArticle):
             elif line.startswith("#") and lang and cur_word:
                 if def_match := self.def_regex.search(line):
                     def_line = def_match.group(1)
-                    def_line = self.clean_def(def_line)
+                    try:
+                        def_line = self.clean_def(def_line)
+                    except TemplateError:
+                        parser_log(context, "Malformed template in def", def_line)
                     cur_word.add_def(def_line.strip())
 
         if cur_word:
             words.append(cur_word)
 
         if not has_char_section and len(words) == 0:
-            self.log("No word parsed")
+            parser_log(context, "No word parsed")
         return words
 
     def _template_def(self, match: Match) -> str:

@@ -33,7 +33,7 @@ def main():
         const=logging.DEBUG,
     )
     args = parser.parse_args()
-    logging.basicConfig(level=args.loglevel)
+    logging.basicConfig(level=args.loglevel, format="%(message)s")
 
     xml_file = args.input
     out_file = args.output
@@ -69,7 +69,7 @@ def main():
 
                 num += 1
                 if num % 1000 == 0:
-                    print(f"{num} articles")
+                    print(f"\r{num:09d} articles", end="")
                 article = wiktionary.Article(title, text)
 
                 for word in article.words:

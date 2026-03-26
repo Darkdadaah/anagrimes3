@@ -35,7 +35,6 @@ class Template:
     _template_parts_regex = re.compile(r"^ *(.+?) *= *(.*?) *$")
 
     def __repr__(self):
-        print(f"Title? '{self.title}'")
         return "{{ " + f"{self.title} | {self.unnamed} || {self.named} " + "}}"
 
     @classmethod

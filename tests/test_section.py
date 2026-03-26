@@ -4,16 +4,8 @@ Unit tests for the Section class.
 """
 
 import pytest
+from pytest import raises
 from wikt.wiki.section import Section, SectionError, MAX_LEVEL
-
-
-def test_repr():
-    """Test __repr__ method."""
-    sec = Section(title="Section1", level=2, text=["line1"], subsections=[])
-    assert repr(sec) == "Section1()"
-    sec2 = Section(title="Section2", level=3, text=["line2"], subsections=[])
-    sec.add_subsection(sec2)
-    assert repr(sec) == "Section1(Section2())"
 
 
 def test_level():
@@ -31,6 +23,10 @@ def test_subsection_addition():
     sec.add_subsection(sub_sec)
     assert sec.subsections == [sub_sec]
 
+    higher_sub = Section(title="Child higher", level=1, text=["line2"])
+    with raises(SectionError):
+        sec.add_subsection(higher_sub)
+
 
 def test_text_line_addition():
     """Test adding a line of text to the section."""
@@ -40,3 +36,12 @@ def test_text_line_addition():
     assert sec.text == [text_lines[0]]
     sec.add_text_line(text_lines[1])
     assert sec.text == text_lines
+
+
+def test_repr():
+    """Test __repr__ method."""
+    sec = Section(title="Section1", level=2, text=["line1"], subsections=[])
+    assert repr(sec) == "Section1()"
+    sec2 = Section(title="Section2", level=3, text=["line2"], subsections=[])
+    sec.add_subsection(sec2)
+    assert repr(sec) == "Section1(Section2())"

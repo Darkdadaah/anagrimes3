@@ -70,6 +70,7 @@ class WikiArticle:
     text: str
 
     _section_regex = re.compile(r"^(=+)\s*(.+?)\s*(=+)$")
+    _section_title_regex = re.compile(r"^\s*(\{\{.+?\}\})")
     _empty_regex = re.compile(r"^\s*$")
     _redirection = re.compile(r"^\s*#REDIRECT", re.IGNORECASE)
     html_comment = re.compile("<!--.*?-->", flags=re.DOTALL)
@@ -86,7 +87,7 @@ class WikiArticle:
         sec_match = self._section_regex.search(section_str.strip())
         if not sec_match:
             context = WikiContext(self.title)
-            parser_log(context, "Can't parse section", section_str)
+            parser_log(context, "Can't parse section, wrong format", section_str)
             return (0, "")
 
         sec_start = sec_match.group(1)
@@ -102,6 +103,13 @@ class WikiArticle:
                 if sec_end != sec_signs:
                     context = WikiContext(self.title, sec_title)
                     parser_log(context, "Section level start and end differ", section_str)
+
+        # Clean up title: only take the first template
+        title_match = self._section_title_regex.search(sec_title.strip())
+        if not title_match:
+            return (sec_level, "")
+
+        sec_title = title_match.group(1)
 
         return (sec_level, sec_title)
 

@@ -91,12 +91,15 @@ class Article(WiktArticle):
             if line.startswith("=="):
                 (level, section_title) = self.parse_section_title(line)
 
-                if not section_title:
-                    parser_log(context, "Skip section, no proper title", line)
-                    continue
-
                 if not level:
                     parser_log(context, "Skip section, no level determined", line)
+                    continue
+
+                if not section_title:
+                    if level in (2,3):
+                        parser_log(context, "Skip section, no proper title", line)
+                    else:
+                        parser_log(context, "Skip section, no proper title", line, debug=True)
                     continue
 
                 # Language section
@@ -148,8 +151,14 @@ class Article(WiktArticle):
                             if sname in word_types:
                                 wtype = word_types[sname]
                                 add_word = True
-                            elif sname not in word_subsections:
-                                parser_log(context, "Word type section not recognized", line)
+                            elif sname in word_subsections:
+                                wdata = word_subsections[sname]
+                                wlevel = wdata.get("level")
+                                if wlevel not in (0, level):
+                                    parser_log(context, f"Section level is wrong {level} != {wlevel}", line)
+
+                            else:
+                                parser_log(context, "Word type/sub section not recognized", line)
                                 # add_word = True
 
                             # Check if this is considered a word section

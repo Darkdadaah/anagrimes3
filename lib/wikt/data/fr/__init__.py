@@ -14,7 +14,7 @@ word_types = {al: w["abrev"] for wname, w in word_types_raw.items() for al in [*
 # Load word sections
 with open(files("wikt.data.fr") / "sections.json", "r", encoding="utf-8") as f:
     sections_raw = json.load(f)
-word_subsections = {al: wname for wname, w in sections_raw.items() for al in [*w["alias"], wname]}
+word_subsections = {al: w for wname, w in sections_raw.items() for al in [*w["alias"], wname]}
 
 # # https://fr.wiktionary.org/wiki/Module:section_article/data
 # # TODO: generate this page automatically

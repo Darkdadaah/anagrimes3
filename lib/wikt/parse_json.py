@@ -81,7 +81,7 @@ def main():
                 for ancestor in elem.xpath("ancestor-or-self::*"):
                     while ancestor.getprevious() is not None:
                         del ancestor.getparent()[0]
-        print("\r                                                       ", end="")
+        print("\r                                                       ")
         print(f"{num} pages parsed")
         print(f"{skipped} pages skipped")
         print(f"{noword} pages without words")

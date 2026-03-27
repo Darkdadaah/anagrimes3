@@ -35,7 +35,7 @@ class WikiContext:
     def __str__(self) -> str:
         s = f"[[{self.title}]]"
         if self.section:
-            s += f"#{self.section}"
+            s += f" #{self.section}"
         return s
 
 
@@ -95,7 +95,7 @@ class WikiArticle:
 
         # Get level
         sec_level = 0
-        for nlevel in range(2, 6):
+        for nlevel in range(2, 7):
             sec_signs = "=" * nlevel
             if sec_start == sec_signs:
                 sec_level = nlevel

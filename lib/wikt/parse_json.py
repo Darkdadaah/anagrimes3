@@ -69,7 +69,7 @@ def main():
 
                 num += 1
                 if num % 1000 == 0:
-                    print(f"\r{num:09d} articles", end="")
+                    print(f"\r{num:>9d} articles", end="")
                 article = wiktionary.Article(title, text)
 
                 if not article.words:
@@ -81,7 +81,7 @@ def main():
                 for ancestor in elem.xpath("ancestor-or-self::*"):
                     while ancestor.getprevious() is not None:
                         del ancestor.getparent()[0]
-
+        print("\r                                                       ", end="")
         print(f"{num} pages parsed")
         print(f"{skipped} pages skipped")
         print(f"{noword} pages without words")

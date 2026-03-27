@@ -15,7 +15,84 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s\t%(message)s")
 
 
-URL = "https://fr.wiktionary.org/w/index.php?title=Module:section_article/data&action=raw"
+def cleanup_sections(data: dict[str, Any]) -> dict[str, str]:
+    """Cleanup sections data.
+    
+    Output:
+    {
+        "section_code": {
+            "name": "section_name",
+            "level": 3,
+            "alias": ["section_alias"],
+            "obsolete": True,
+        }
+    }
+    """
+    new_dict = {}
+    for code, sec in data["texte"].items():
+
+        # Special level (any = 0)
+        level = sec.get("niveau", 0)
+        if level == "tous":
+            level = 0
+
+        new_dict[code] = {
+            "name": sec.get("nom"),
+            "level": level,
+            "alias": listify(sec.get("alias")),
+            "obsolete": sec.get("obsolète") is True
+        }
+    return new_dict
+
+
+def cleanup_word_types(data: dict[str, Any]) -> dict[str, str]:
+    """Cleanup word_type data.
+    
+    Output:
+    {
+        "word_type": {
+            "abrev": "word",
+            "alias": ["w"],
+        }
+    }
+    """
+    new_dict = {}
+    for code, word in data["texte"].items():
+        new_dict[code] = {
+            "abrev": word.get("abrev"),
+            "alias": listify(word.get("alias")),
+        }
+    return new_dict
+
+
+def listify(data: dict[int, Any]) -> list[Any]:
+    """Convert a dict to a list, sorted by key."""
+    if not data:
+        return []
+
+    new_list = []
+    for key in sorted(data.keys()):
+        new_list.append(data[key])
+    return new_list
+
+
+def cleanup_languages(data: dict[str, Any]) -> dict[str, str]:
+    """Cleanup languages data.
+    
+    Output needs to be a dict with keys=language code, value=language name
+    """
+    new_dict = {}
+    for lang, lang_data in data.items():
+        new_dict[lang] = lang_data["name"]
+    return new_dict
+
+
+URL_TEMPLATE = "https://fr.wiktionary.org/w/index.php?title=%s&action=raw"
+URLS = [
+    ("sections", URL_TEMPLATE % "Module:section_article/data", cleanup_sections),
+    ("languages", URL_TEMPLATE % "Module:langues/data", cleanup_languages),
+    ("word_types", URL_TEMPLATE % "Module:types_de_mots/data", cleanup_word_types),
+]
 
 
 def get_raw_data(url: str, user_agent: str, cache_file: Path | None) -> list[str]:
@@ -51,7 +128,7 @@ def unluafy(code: Any) -> Any:
     return code
 
 
-def process_data(out_dir: Path, cache_dir: Path, user_agent: str, url: str, name: str) -> None:
+def process_data(out_dir: Path, cache_dir: Path, user_agent: str, url: str, name: str, cleanup) -> None:
     """Process sections from the Lua code."""
     raw_lua = get_raw_data(url, user_agent, cache_dir / f"{name}.lua")
 
@@ -59,6 +136,7 @@ def process_data(out_dir: Path, cache_dir: Path, user_agent: str, url: str, name
     lua_code = "function(L)\n" + raw_lua + "\nend"
     new_data = lua.eval(lua_code)()
     new_data = unluafy(new_data)
+    new_data = cleanup(new_data)
 
     out_file = out_dir / f"{name}.json"
     with out_file.open("w", encoding="utf-8") as f:
@@ -78,13 +156,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    urls = [
-        ("sections", "https://fr.wiktionary.org/w/index.php?title=Module:section_article/data&action=raw")
-    ]
-
-    for name, url in urls:
+    for name, url, cleanup in URLS:
         logging.info(f"Process data for '{name}'")
-        process_data(args.out_dir, args.cache_dir, args.user_agent, url, name)
+        process_data(args.out_dir, args.cache_dir, args.user_agent, url, name, cleanup)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,395 @@
+{
+    "écriture": {
+        "name": "autre alphabet ou système d’écriture",
+        "level": 4,
+        "alias": [
+            "écrit"
+        ],
+        "obsolete": false
+    },
+    "anciennes orthographes": {
+        "name": "anciennes orthographes",
+        "level": 4,
+        "alias": [
+            "ortho-arch",
+            "anciennes ortho"
+        ],
+        "obsolete": false
+    },
+    "voir aussi": {
+        "name": "voir aussi",
+        "level": 3,
+        "alias": [
+            "voir"
+        ],
+        "obsolete": false
+    },
+    "variantes orthographiques": {
+        "name": "variantes orthographiques",
+        "level": 4,
+        "alias": [
+            "var-ortho",
+            "variantes ortho"
+        ],
+        "obsolete": false
+    },
+    "augmentatifs": {
+        "name": "augmentatifs",
+        "level": 4,
+        "alias": [
+            "augm"
+        ],
+        "obsolete": false
+    },
+    "phrases": {
+        "name": "proverbes et phrases toutes faites",
+        "level": 4,
+        "alias": [],
+        "obsolete": false
+    },
+    "antonymes": {
+        "name": "antonymes",
+        "level": 4,
+        "alias": [
+            "ant",
+            "anto"
+        ],
+        "obsolete": false
+    },
+    "hyperonymes": {
+        "name": "hyperonymes",
+        "level": 4,
+        "alias": [
+            "hyper"
+        ],
+        "obsolete": false
+    },
+    "prononciation": {
+        "name": "prononciation",
+        "level": 3,
+        "alias": [
+            "pron",
+            "prononciations"
+        ],
+        "obsolete": false
+    },
+    "dérivés autres langues": {
+        "name": "dérivés dans d’autres langues",
+        "level": 4,
+        "alias": [
+            "drv-int",
+            "dérivés int"
+        ],
+        "obsolete": false
+    },
+    "abréviations": {
+        "name": "abréviations",
+        "level": 4,
+        "alias": [
+            "abrév"
+        ],
+        "obsolete": false
+    },
+    "traductions": {
+        "name": "traductions",
+        "level": 4,
+        "alias": [
+            "trad"
+        ],
+        "obsolete": false
+    },
+    "dérivés": {
+        "name": "dérivés",
+        "level": 4,
+        "alias": [
+            "drv"
+        ],
+        "obsolete": false
+    },
+    "anagrammes": {
+        "name": "anagrammes",
+        "level": 3,
+        "alias": [
+            "anagramme",
+            "anagr"
+        ],
+        "obsolete": false
+    },
+    "taux de reconnaissance": {
+        "name": "taux de reconnaissance",
+        "level": 3,
+        "alias": [],
+        "obsolete": false
+    },
+    "méronymes": {
+        "name": "méronymes",
+        "level": 4,
+        "alias": [
+            "méro"
+        ],
+        "obsolete": false
+    },
+    "variantes": {
+        "name": "variantes",
+        "level": 4,
+        "alias": [
+            "var"
+        ],
+        "obsolete": false
+    },
+    "gentilés": {
+        "name": "gentilés et adjectifs correspondants",
+        "level": 4,
+        "alias": [
+            "gent"
+        ],
+        "obsolete": false
+    },
+    "noms vernaculaires": {
+        "name": "noms vernaculaires",
+        "level": 4,
+        "alias": [
+            "noms-vern"
+        ],
+        "obsolete": false
+    },
+    "translittérations": {
+        "name": "translittérations dans diverses écritures",
+        "level": 4,
+        "alias": [
+            "translit"
+        ],
+        "obsolete": false
+    },
+    "citations": {
+        "name": "citations",
+        "level": 4,
+        "alias": [
+            "cit"
+        ],
+        "obsolete": false
+    },
+    "notes": {
+        "name": "notes",
+        "level": 0,
+        "alias": [
+            "note"
+        ],
+        "obsolete": false
+    },
+    "bibliographie": {
+        "name": "bibliographie",
+        "level": 4,
+        "alias": [
+            "bib"
+        ],
+        "obsolete": false
+    },
+    "holonymes": {
+        "name": "holonymes",
+        "level": 4,
+        "alias": [
+            "holo"
+        ],
+        "obsolete": false
+    },
+    "sources": {
+        "name": "sources",
+        "level": 4,
+        "alias": [
+            "src"
+        ],
+        "obsolete": false
+    },
+    "dico sinogrammes": {
+        "name": "référence dans les dictionnaires de sinogrammes",
+        "level": 3,
+        "alias": [
+            "sino-dico",
+            "dico-sino"
+        ],
+        "obsolete": false
+    },
+    "attestations": {
+        "name": "attestations historiques",
+        "level": 4,
+        "alias": [
+            "attest",
+            "hist"
+        ],
+        "obsolete": false
+    },
+    "diminutifs": {
+        "name": "diminutifs",
+        "level": 4,
+        "alias": [
+            "dimin"
+        ],
+        "obsolete": false
+    },
+    "quasi-synonymes": {
+        "name": "quasi-synonymes",
+        "level": 4,
+        "alias": [
+            "q-syn",
+            "quasi-syn"
+        ],
+        "obsolete": false
+    },
+    "références": {
+        "name": "références",
+        "level": 3,
+        "alias": [
+            "référence",
+            "réf",
+            "ref"
+        ],
+        "obsolete": false
+    },
+    "homophones": {
+        "name": "homophones",
+        "level": 4,
+        "alias": [
+            "homo"
+        ],
+        "obsolete": false
+    },
+    "paronymes": {
+        "name": "paronymes",
+        "level": 4,
+        "alias": [
+            "paro"
+        ],
+        "obsolete": false
+    },
+    "déclinaison": {
+        "name": "déclinaison",
+        "level": 4,
+        "alias": [
+            "décl"
+        ],
+        "obsolete": false
+    },
+    "traductions à trier": {
+        "name": "traductions à trier",
+        "level": 5,
+        "alias": [
+            "trad-trier",
+            "trad trier"
+        ],
+        "obsolete": false
+    },
+    "faux-amis": {
+        "name": "faux-amis",
+        "level": 4,
+        "alias": [],
+        "obsolete": false
+    },
+    "conjugaison": {
+        "name": "conjugaison",
+        "level": 4,
+        "alias": [
+            "conjug"
+        ],
+        "obsolete": false
+    },
+    "variantes dialectales": {
+        "name": "variantes dialectales",
+        "level": 4,
+        "alias": [
+            "dial",
+            "var-dial",
+            "variantes dial",
+            "variantes dialectes",
+            "dialectes"
+        ],
+        "obsolete": false
+    },
+    "modification phonétique": {
+        "name": "modification phonétique",
+        "level": 4,
+        "alias": [
+            "modphon",
+            "mutation"
+        ],
+        "obsolete": false
+    },
+    "vocabulaire": {
+        "name": "vocabulaire apparenté par le sens",
+        "level": 4,
+        "alias": [
+            "voc",
+            "vocabulaire apparenté",
+            "vocabulaire proche"
+        ],
+        "obsolete": false
+    },
+    "hyponymes": {
+        "name": "hyponymes",
+        "level": 4,
+        "alias": [
+            "hypo"
+        ],
+        "obsolete": false
+    },
+    "étymologie": {
+        "name": "étymologie",
+        "level": 3,
+        "alias": [
+            "étym",
+            "etym"
+        ],
+        "obsolete": false
+    },
+    "composés": {
+        "name": "composés",
+        "level": 4,
+        "alias": [
+            "compos"
+        ],
+        "obsolete": false
+    },
+    "hyper-verbes": {
+        "name": "hyper-verbes",
+        "level": 4,
+        "alias": [
+            "hypervb"
+        ],
+        "obsolete": false
+    },
+    "troponymes": {
+        "name": "troponymes",
+        "level": 4,
+        "alias": [
+            "tropo"
+        ],
+        "obsolete": false
+    },
+    "apparentés": {
+        "name": "apparentés étymologiques",
+        "level": 4,
+        "alias": [
+            "apr",
+            "app",
+            "apparentés étymologiques"
+        ],
+        "obsolete": false
+    },
+    "synonymes": {
+        "name": "synonymes",
+        "level": 4,
+        "alias": [
+            "syn"
+        ],
+        "obsolete": false
+    },
+    "transcriptions": {
+        "name": "transcriptions dans diverses écritures",
+        "level": 4,
+        "alias": [
+            "trans",
+            "tran"
+        ],
+        "obsolete": false
+    }
+}
